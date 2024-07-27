@@ -13,7 +13,7 @@ It has been adapted to serve as a command gateway for Docker containers, allowin
  - LOG_LEVEL (optional, default: INFO) - Possible values: NONE, ERROR, WARNING, INFO, DEBUG
  - TIMEOUT (optional, default: 5) - Time in seconds for the maximum duration of socket operations
 # Compiling
-`gcc *.c -Wall -Werror -Wno-parentheses -o server`
+`gcc *.c -O3 -Wall -Werror -Wno-parentheses -o server`
 # TODO
  - Make container subvolumes path a configuration option (instead of hardcoded value)
  - Make group names associated with privileges a configuration option (instead of hardcoded value)
