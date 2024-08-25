@@ -4,6 +4,7 @@
 #define LINE_BUF_SIZE 2048
 
 static char line_buffer[LINE_BUF_SIZE];
+static bool redirected_stdio = false;
 
 static size_t init_line_buffer()
 {
@@ -110,13 +111,13 @@ int lvfprintf(FILE *restrict stream, const char *restrict format, va_list ap, Ac
 	else
 		snprintf(line_ptr, LINE_BUF_SIZE-(line_ptr-line_buffer), "%s", format);
 
-	if (flock(fileno(stream), LOCK_EX) < 0)
+	if (redirected_stdio && flock(fileno(stream), LOCK_EX) < 0)
 		destructor(errno);	/* Logging isn't reliable without locking. Just exit. */
 
 	/* Override the stream from Action (Same Action for DEFAULT and SPECIAL) */
 	ret = vfprintf(stream, line_buffer, ap);
 
-	if (flock(fileno(stream), LOCK_UN) < 0)
+	if (redirected_stdio && flock(fileno(stream), LOCK_UN) < 0)
 		destructor(errno);	/* We can't keep the file deadlocked. Exit. */
 	errno = olderrno;
 	return ret;
@@ -134,18 +135,18 @@ void lperror(const char *s)
 		return;
 
 	INIT_LINE_PTR(line_ptr)
-	if (flock(STDERR_FILENO, LOCK_EX) < 0)
+	if (redirected_stdio && flock(STDERR_FILENO, LOCK_EX) < 0)
 		destructor(errno);	/* Logging isn't reliable without locking. Just exit. */
 	fprintf(stderr, "%s", line_buffer);
 	if (ret == FALLBACK)
 		fprintf(stderr, "[DEBUG]: ");
 	perror(s);
-	if (flock(STDERR_FILENO, LOCK_UN) < 0)
+	if (redirected_stdio && flock(STDERR_FILENO, LOCK_UN) < 0)
 		destructor(errno);	/* We can't keep the file deadlocked. Exit. */
 	errno = olderrno;
 }
 
-void log_stdio()
+void __server log_stdio()
 {
 	int fd, nullfd;
 
@@ -165,4 +166,5 @@ void log_stdio()
 		check( close(nullfd) )
 	if (fd > STDERR_FILENO && fd != nullfd)
 		check( close(fd) )
+	redirected_stdio = true;
 }
