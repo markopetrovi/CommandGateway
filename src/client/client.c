@@ -4,5 +4,5 @@ int sockfd;
 
 int main(int argc, char *argv[])
 {
-    
+    init_program();
 }

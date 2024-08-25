@@ -11,8 +11,6 @@
 void log_stdio();
 
 /* ************* environment.c ************* */
-extern time_t timeout_seconds;
-
 void daemonize();
 
 #endif /* _SERVER_H */

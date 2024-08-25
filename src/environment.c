@@ -3,11 +3,11 @@
 const char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
 bool shouldDeleteSocket = false;
 static bool manualDestructorCall = false;
+static time_t timeout_seconds = 5;
 
 int log_level = LOG_WARNING;
 char *sockPath = NULL;
 char __server *rootPath = NULL;
-time_t __server timeout_seconds = 5;
 
 void __server daemonize()
 {
@@ -44,7 +44,7 @@ void clear_environment()
 
 void __server load_server_env()
 {
-	char *containerID, *timeout_str;
+	char *containerID;
 
 	containerID = getenv("CONTAINER_SUBVOL_ID");
 	if (!containerID) {
@@ -56,18 +56,11 @@ void __server load_server_env()
 		lprintf("[ERROR]: Supplied container does not exist in /var/lib/docker/btrfs/subvolumes\n");
 		destructor(ENOENT);
 	}
-
-	timeout_str = getenv("TIMEOUT");
-	if (timeout_str) {
-		timeout_seconds = atoi(timeout_str);
-		if (!timeout_seconds)
-			lprintf("[WARNING]: Socket timeout disabled. Operations can block indefinitely.\n");
-	}
 }
 
 void load_environment()
 {
-	char *log_level_str, *relative_sockPath;
+	char *log_level_str, *relative_sockPath, *timeout_str;
 
 	#ifdef SERVER_BUILD
 	load_server_env();
@@ -86,6 +79,13 @@ void load_environment()
 	#elif CLIENT_BUILD
 	sockPath = relative_sockPath;
 	#endif
+
+	timeout_str = getenv("TIMEOUT");
+	if (timeout_str) {
+		timeout_seconds = atoi(timeout_str);
+		if (!timeout_seconds)
+			lprintf("[WARNING]: Socket timeout disabled. Operations can block indefinitely.\n");
+	}
 
 	log_level_str = getenv("LOG_LEVEL");
 	if (log_level_str) {
