@@ -39,7 +39,7 @@ void clear_environment()
 	unsetenv("TIMEOUT");
 }
 
-void __server load_specific_env()
+void __server load_server_env()
 {
 	char *containerID, *timeout_str;
 
@@ -62,16 +62,13 @@ void __server load_specific_env()
 	}
 }
 
-void __client load_specific_env()
-{
-
-}
-
 void load_environment()
 {
 	char *log_level_str, *relative_sockPath;
 
-	load_specific_env();
+	#ifdef SERVER_BUILD
+	load_server_env();
+	#endif
 	relative_sockPath = getenv("SOCK_PATH");
 	if (!relative_sockPath) {
 		#ifdef SERVER_BUILD
