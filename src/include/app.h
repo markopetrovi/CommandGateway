@@ -4,6 +4,16 @@
 
 #include <compiler.h>
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <signal.h>
+#include <errno.h>
+
 #ifdef CLIENT_BUILD
 #include <client.h>
 #elif defined(SERVER_BUILD)

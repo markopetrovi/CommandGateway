@@ -7,19 +7,9 @@
 #define __server __attribute__((section(".text")))
 #define __client __attribute__((section(".discard.text")))
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <signal.h>
 #include <linux/prctl.h>
 #include <sys/prctl.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <sys/file.h>
 
 /* ************* log.c ************* */
 #define LOG_NONE	0
