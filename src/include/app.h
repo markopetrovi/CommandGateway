@@ -52,8 +52,6 @@ typedef enum {
 #define LOG_INFO	3
 #define LOG_DEBUG	4
 
-extern int log_level;
-
 void log_stdio();
 /* Following logging functions preserve errno */
 /* THREAD SAFE */
@@ -66,6 +64,7 @@ void lperror(const char *s);
 /* ************* environment.c ************* */
 extern char *sockPath, *rootPath;
 extern time_t timeout_seconds;
+extern int log_level;
 
 void daemonize();
 void load_environment();

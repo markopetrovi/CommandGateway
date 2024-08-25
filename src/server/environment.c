@@ -2,6 +2,7 @@
 
 char *sockPath = NULL, *rootPath = NULL;
 time_t timeout_seconds = 5;
+int log_level = LOG_WARNING;
 
 void daemonize()
 {

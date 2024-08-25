@@ -3,7 +3,6 @@
 #include <time.h>
 #define LINE_BUF_SIZE 2048
 
-int log_level = LOG_WARNING;
 static char line_buffer[LINE_BUF_SIZE];
 
 static size_t init_line_buffer()
