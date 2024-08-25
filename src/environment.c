@@ -1,11 +1,12 @@
 #include <app.h>
 
 const char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
-char *sockPath = NULL, *rootPath = NULL;
-time_t timeout_seconds = 5;
 int log_level = LOG_WARNING;
+char *sockPath = NULL;
+char __server *rootPath = NULL;
+time_t __server timeout_seconds = 5;
 
-void daemonize()
+void __server daemonize()
 {
 	pid_t pid;
 
@@ -38,9 +39,9 @@ void clear_environment()
 	unsetenv("TIMEOUT");
 }
 
-void load_environment()
+void __server load_specific_env()
 {
-	char *containerID, *log_level_str, *timeout_str, *relative_sockPath;
+	char *containerID, *timeout_str;
 
 	containerID = getenv("CONTAINER_SUBVOL_ID");
 	if (!containerID) {
@@ -53,12 +54,38 @@ void load_environment()
 		destructor(ENOENT);
 	}
 
+	timeout_str = getenv("TIMEOUT");
+	if (timeout_str) {
+		timeout_seconds = atoi(timeout_str);
+		if (!timeout_seconds)
+			lprintf("[WARNING]: Socket timeout disabled. Operations can block indefinitely.\n");
+	}
+}
+
+void __client load_specific_env()
+{
+
+}
+
+void load_environment()
+{
+	char *log_level_str, *relative_sockPath;
+
+	load_specific_env();
 	relative_sockPath = getenv("SOCK_PATH");
 	if (!relative_sockPath) {
+		#ifdef SERVER_BUILD
 		lprintf("[ERROR]: Missing SOCK_PATH environment variable.\n");
 		destructor(EINVAL);
+		#elif CLIENT_BUILD
+		relative_sockPath = "/tmp/cgsocket";
+		#endif
 	}
+	#ifdef SERVER_BUILD
 	check( asprintf(&sockPath, "%s/%s", rootPath, relative_sockPath) )
+	#elif CLIENT_BUILD
+	sockPath = relative_sockPath;
+	#endif
 
 	log_level_str = getenv("LOG_LEVEL");
 	if (log_level_str) {
@@ -80,14 +107,9 @@ void load_environment()
 				break;
 			default:
 				log_level = LOG_INFO;
+				#ifdef SERVER_BUILD
 				lprintf("[WARNING]: Unknown LOG_LEVEL value. Using the default value.\n");
+				#endif
 		}
-	}
-
-	timeout_str = getenv("TIMEOUT");
-	if (timeout_str) {
-		timeout_seconds = atoi(timeout_str);
-		if (!timeout_seconds)
-			lprintf("[WARNING]: Socket timeout disabled. Operations can block indefinitely.\n");
 	}
 }
