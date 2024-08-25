@@ -12,38 +12,18 @@
 #include <fcntl.h>
 
 /* ************* log.c ************* */
-#define LOG_NONE	0
-#define LOG_ERROR	1
-#define LOG_WARNING	2
-#define LOG_INFO	3
-#define LOG_DEBUG	4
-
 void log_stdio();
-/* Following logging functions preserve errno */
-/* THREAD SAFE */
-int lfprintf(FILE *restrict stream, const char *restrict format, ...);
-int lprintf(const char *restrict format, ...);
-int lvfprintf(FILE *restrict stream, const char *restrict format, va_list ap, Action *_Nullable ac);
-void lperror(const char *s);
-#define dlperror(s)	lperror(__FILE__ ":" TOSTRING(__LINE__) ":" s)
 
 /* ************* environment.c ************* */
-extern char *sockPath, *rootPath;
+extern char *rootPath;
 extern time_t timeout_seconds;
-extern int log_level;
-extern const char version[];
 
 void daemonize();
-void load_environment();
-void clear_environment();
-bool check_existing();
-
 /* ************* server.c ************* */
 extern int sockfd;
 
 void destructor(int signum);
 void set_timeout(int fd);
-
 /* ************* request_dispatcher.c ************* */
 #define PRIV_NONE		0
 #define PRIV_TESTDEV	1

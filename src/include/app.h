@@ -13,6 +13,7 @@
 #include <sys/un.h>
 #include <signal.h>
 #include <errno.h>
+#include <sys/file.h>
 
 #ifdef CLIENT_BUILD
 #include <client.h>
@@ -41,6 +42,28 @@ typedef enum {
 	SPECIAL
 } Action;
 
+/* ************* environment.c ************* */
+extern char *sockPath;
+extern const char version[];
+extern int log_level;
+
+bool check_existing();
+void load_environment();
+void clear_environment();
+/* ************* log.c ************* */
+#define LOG_NONE	0
+#define LOG_ERROR	1
+#define LOG_WARNING	2
+#define LOG_INFO	3
+#define LOG_DEBUG	4
+
+/* Following logging functions preserve errno */
+/* THREAD SAFE */
+int lfprintf(FILE *restrict stream, const char *restrict format, ...);
+int lprintf(const char *restrict format, ...);
+int lvfprintf(FILE *restrict stream, const char *restrict format, va_list ap, Action *_Nullable ac);
+void lperror(const char *s);
+#define dlperror(s)	lperror(__FILE__ ":" TOSTRING(__LINE__) ":" s)
 /* ************* IO.c ************* */
 ssize_t lread(int fd, void *buf, size_t count);
 ssize_t lwrite(int fd, const void *buf, size_t count);
