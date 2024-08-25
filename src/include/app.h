@@ -14,6 +14,9 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/file.h>
+#include <linux/prctl.h>
+#include <sys/prctl.h>
+#include <fcntl.h>
 
 #ifdef CLIENT_BUILD
 #include <client.h>
@@ -42,6 +45,21 @@ typedef enum {
 	SPECIAL
 } Action;
 
+/* ************* main.c ************* */
+extern int sockfd;
+
+void destructor(int signum);
+/* ************* request_dispatcher.c ************* */
+#define PRIV_NONE		0
+#define PRIV_TESTDEV	1
+#define PRIV_DEV		2
+#define PRIV_ADMIN		3
+#define PRIV_SUPERUSER	4
+
+extern int privs;
+
+void dispatch_request();
+void report_error_and_die(const char *restrict error);	/* To use after the connection is established */
 /* ************* environment.c ************* */
 extern const char version[];
 extern char *sockPath, *rootPath;
