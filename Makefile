@@ -8,7 +8,8 @@ BIN_DIR = bin
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -I$(INCLUDE_DIR)
+CFLAGS = -I$(INCLUDE_DIR) -Wall -Wno-parentheses
+LDFLAGS = -Wl,--gc-sections
 
 # Server target
 server: CFLAGS += -DSERVER_BUILD
@@ -20,11 +21,11 @@ client: $(BIN_DIR)/cgclient
 
 # Compile and link for server
 $(BIN_DIR)/cgserver: $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/server/*.c) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 # Compile and link for client
 $(BIN_DIR)/cgclient: $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/client/*.c) | $(BIN_DIR)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^
 
 # Create binary directory if it doesn't exist
 $(BIN_DIR):

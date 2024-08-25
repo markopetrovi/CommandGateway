@@ -5,7 +5,7 @@
 #error "Trying to build the client with server headers included"
 #endif
 #define __server __attribute__((section(".text")))
-#define __client __attribute__((section(".discard.text")))
+#define __client __attribute__((section(".discard.text"TOSTRING(__COUNTER__))))
 
 #include <linux/prctl.h>
 #include <sys/prctl.h>
