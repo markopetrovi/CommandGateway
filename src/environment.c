@@ -106,9 +106,9 @@ void load_environment()
 				log_level = LOG_DEBUG;
 				break;
 			default:
-				log_level = LOG_INFO;
+				log_level = LOG_WARNING;
 				#ifdef SERVER_BUILD
-				lprintf("[WARNING]: Unknown LOG_LEVEL value. Using the default value.\n");
+				lprintf("[WARNING]: Unknown LOG_LEVEL value. Using the default value: LOG_WARNING.\n");
 				#endif
 		}
 	}
