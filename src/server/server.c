@@ -50,7 +50,7 @@ out:
 	}
 	else {
 		dlperror("read");
-		lprintf("[INFO]: Process didn't respond to info query.");
+		lprintf("[INFO]: Process didn't respond to info query.\n");
 	}
 	free(buf);
 }
@@ -60,6 +60,7 @@ void open_socket()
 {
 	struct sockaddr_un sock = { 0 };
 	
+	lprintf("[DEBUG]: Opening listening socket...\n");
 	fill_sockaddr(&sock);
 	check( sockfd=socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0) )
 	if (does_file_exist()) {
@@ -84,6 +85,7 @@ void open_socket()
 	check( listen(sockfd, 5) )
 	check( bind(sockfd, &sock, sizeof(struct sockaddr_un)) )
 	shouldDeleteSocket = true;
+	lprintf("[DEBUG]: Started listening on socket %s\n", sockPath);
 }
 
 int main()

@@ -13,14 +13,14 @@ void report_error_and_die(const char *restrict error)
 
 	write(sockfd, error, strlen(error));
 	write(sockfd, r, sizeof(r));
-	lprintf("[ERROR]: %s", error);
+	lprintf("[ERROR]: %s\n", error);
 	lprintf("[ERROR]: Connection with client %s closed.\n", clientName);
 	destructor(olderrno);
 }
 #elif CLIENT_BUILD
 void report_error_and_die(const char *restrict error)
 {
-	lprintf("[ERROR] [Client]: %s", error);
+	lprintf("[ERROR] [Client]: %s\n", error);
 	destructor(errno);
 }
 #endif
@@ -124,7 +124,7 @@ void dispatch_request()
 	set_timeout(sockfd);
 
 	get_peer_credentails();
-	lprintf("[INFO]: Established connection with %s", clientName);
+	lprintf("[INFO]: Established connection with %s\n", clientName);
 	lread(sockfd, buf, BUF_SIZE);
 
 	/* Check command */
