@@ -108,7 +108,7 @@ static void open_socket()
 	
 	fill_sockaddr(&sock);
 	check( sockfd=socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0) )
-	if (check_existing()) {
+	if (does_file_exist()) {
 		check_sig(SIGALRM, dummy)
 		alarm(1);	// Interrupt connect if taking too long
 		if (connect(sockfd, &sock, sizeof(struct sockaddr_un))) {

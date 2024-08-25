@@ -47,7 +47,7 @@ extern const char version[];
 extern char *sockPath;
 extern int log_level;
 
-bool check_existing();
+bool does_file_exist();
 void load_environment();
 void clear_environment();
 /* ************* log.c ************* */

@@ -21,7 +21,7 @@ void __server daemonize()
 		exit(0);
 }
 
-bool check_existing()
+bool does_file_exist()
 {
 	int fd;
 	fd = open(sockPath, O_PATH);
@@ -49,7 +49,7 @@ void __server load_server_env()
 		destructor(EINVAL);
 	}
 	check( asprintf(&rootPath, "/var/lib/docker/btrfs/subvolumes/%s", containerID) )
-	if (!check_existing(rootPath)) {
+	if (!does_file_exist(rootPath)) {
 		lprintf("[ERROR]: Supplied container does not exist in /var/lib/docker/btrfs/subvolumes\n");
 		destructor(ENOENT);
 	}
