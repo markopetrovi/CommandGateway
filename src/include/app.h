@@ -44,7 +44,7 @@ typedef enum {
 
 /* ************* environment.c ************* */
 extern const char version[];
-extern char *sockPath;
+extern char *sockPath, *rootPath;
 extern int log_level;
 
 bool does_file_exist();

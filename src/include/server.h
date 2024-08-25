@@ -15,7 +15,6 @@
 void log_stdio();
 
 /* ************* environment.c ************* */
-extern char *rootPath;
 extern time_t timeout_seconds;
 
 void daemonize();
