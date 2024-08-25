@@ -4,8 +4,8 @@
 #ifdef _CLIENT_H
 #error "Trying to build the client with server headers included"
 #endif
-#define __server __attribute__((section(".text")))
-#define __client __attribute__((section(".discard.text"TOSTRING(__COUNTER__))))
+#define __server __attribute__((section(".server"TOSTRING(__COUNTER__))))
+#define __client __attribute__((section(".discard.client"TOSTRING(__COUNTER__))))
 
 #include <linux/prctl.h>
 #include <sys/prctl.h>

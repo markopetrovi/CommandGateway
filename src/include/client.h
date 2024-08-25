@@ -4,8 +4,8 @@
 #ifdef _SERVER_H
 #error "Trying to build the server with client headers included"
 #endif
-#define __server __attribute__((section(".discard.text"TOSTRING(__COUNTER__))))
-#define __client __attribute__((section(".text"), strong))
+#define __server __attribute__((section(".discard.server"TOSTRING(__COUNTER__))))
+#define __client __attribute__((section(".client"TOSTRING(__COUNTER__)), strong))
 
 /* ************* client.c ************* */
 void destructor(int signum);
