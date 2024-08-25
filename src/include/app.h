@@ -16,16 +16,15 @@
 #include <errno.h>
 #include <sys/file.h>
 
-#define BUF_SIZE 300
-#define bool short int
-#define false 0
-#define true 1
-#define STRINGIFY(x) #x
-#define TOSTRING(x) STRINGIFY(x)
-#define _Nullable
+#include <compiler.h>
 
-#define likely(x)	__builtin_expect(!!(x), 1)
-#define unlikely(x)	__builtin_expect(!!(x), 0)
+#ifdef CLIENT_BUILD
+#include <client.h>
+#elif defined(SERVER_BUILD)
+#include <server.h>
+#else
+#error "Please specify whether you're building the server or the client."
+#endif
 
 #define check(...)									\
 	if (unlikely((__VA_ARGS__) < 0)) {				\
