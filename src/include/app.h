@@ -43,8 +43,8 @@ typedef enum {
 } Action;
 
 /* ************* environment.c ************* */
-extern char *sockPath;
 extern const char version[];
+extern char *sockPath;
 extern int log_level;
 
 bool check_existing();
