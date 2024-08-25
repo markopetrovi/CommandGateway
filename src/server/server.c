@@ -3,7 +3,6 @@
 int sockfd = -1;
 static bool opened = false;
 static bool manualHandlerCall = false;
-const char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
 
 void _destructor(int signum)
 {

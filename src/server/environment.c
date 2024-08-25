@@ -1,5 +1,6 @@
 #include <app.h>
 
+const char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
 char *sockPath = NULL, *rootPath = NULL;
 time_t timeout_seconds = 5;
 int log_level = LOG_WARNING;

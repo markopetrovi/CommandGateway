@@ -65,6 +65,7 @@ void lperror(const char *s);
 extern char *sockPath, *rootPath;
 extern time_t timeout_seconds;
 extern int log_level;
+extern const char version[];
 
 void daemonize();
 void load_environment();
@@ -73,7 +74,6 @@ bool check_existing();
 
 /* ************* server.c ************* */
 extern int sockfd;
-extern const char version[];
 
 void destructor(int signum);
 void set_timeout(int fd);
