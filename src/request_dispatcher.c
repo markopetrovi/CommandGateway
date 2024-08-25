@@ -5,6 +5,7 @@
 static char *clientName = "UNIDENTIFIED";
 int privs = PRIV_NONE;
 
+#ifdef SERVER_BUILD
 void report_error_and_die(const char *restrict error)
 {
 	static const char r[] = "Connection closed.\n";
@@ -16,6 +17,16 @@ void report_error_and_die(const char *restrict error)
 	lprintf("[ERROR]: Connection with client %s closed.\n", clientName);
 	destructor(olderrno);
 }
+#elif CLIENT_BUILD
+void report_error_and_die(const char *restrict error)
+{
+	int olderrno = errno;
+
+	close(sockfd);
+	lprintf("[ERROR] [Client]: %s", error);
+	destructor(olderrno);
+}
+#endif
 
 static uid_t get_peer_uid()
 {
@@ -112,7 +123,7 @@ void dispatch_request()
 
 	buf[BUF_SIZE] = '\0';
 	buf[0] = '\0';
-	check( prctl(PR_SET_NAME, "jma_Iclient") )
+	check( prctl(PR_SET_NAME, "jma_Idispatcher") )
 	set_timeout(sockfd);
 
 	get_peer_credentails();
