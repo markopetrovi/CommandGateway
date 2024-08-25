@@ -20,11 +20,8 @@ void report_error_and_die(const char *restrict error)
 #elif CLIENT_BUILD
 void report_error_and_die(const char *restrict error)
 {
-	int olderrno = errno;
-
-	close(sockfd);
 	lprintf("[ERROR] [Client]: %s", error);
-	destructor(olderrno);
+	destructor(errno);
 }
 #endif
 
