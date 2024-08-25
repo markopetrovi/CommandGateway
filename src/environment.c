@@ -170,3 +170,13 @@ void set_timeout(int fd)
 	check( setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval)) )
 	check( setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(struct timeval)) )
 }
+
+void fill_sockaddr(struct sockaddr_un *sock)
+{
+	sock->sun_family = AF_UNIX;
+	if (strlen(sockPath) >= sizeof(sock->sun_path)) {
+		lprintf("[ERROR]: Cannot create socket. Path %s too long (max length " TOSTRING(sizeof(sock->sun_path)-1) ")\n", sockPath);
+		destructor(ENAMETOOLONG);
+	}
+	strcpy(sock->sun_path, sockPath);
+}

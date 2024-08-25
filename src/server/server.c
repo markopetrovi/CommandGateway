@@ -2,16 +2,6 @@
 
 int sockfd = -1;
 
-static void fill_sockaddr(struct sockaddr_un *sock)
-{
-	sock->sun_family = AF_UNIX;
-	if (strlen(sockPath) >= sizeof(sock->sun_path)) {
-		lprintf("[ERROR]: Cannot create socket. Path %s too long (max length " TOSTRING(sizeof(sock->sun_path)-1) ")\n", sockPath);
-		destructor(ENAMETOOLONG);
-	}
-	strcpy(sock->sun_path, sockPath);
-}
-
 static void get_server_info()
 {
 	struct ucred cred;
