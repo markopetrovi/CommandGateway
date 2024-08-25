@@ -19,11 +19,11 @@ client: CFLAGS += -DCLIENT_BUILD
 client: $(BIN_DIR)/cgclient
 
 # Compile and link for server
-$(BIN_DIR)/cgserver: $(wildcard $(SRC_DIR)/server/*.c) | $(BIN_DIR)
+$(BIN_DIR)/cgserver: $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/server/*.c) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Compile and link for client
-$(BIN_DIR)/cgclient: $(wildcard $(SRC_DIR)/client/*.c) | $(BIN_DIR)
+$(BIN_DIR)/cgclient: $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/client/*.c) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Create binary directory if it doesn't exist
