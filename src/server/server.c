@@ -1,32 +1,6 @@
 #include <app.h>
 
 int sockfd = -1;
-static bool opened = false;
-static bool manualHandlerCall = false;
-
-void _destructor(int signum)
-{
-	const char *signal;
-
-	if (sockfd != -1)
-		close(sockfd);
-	if (opened)
-		unlink(sockPath);
-	if (!manualHandlerCall) {
-		signal = sigdescr_np(signum);
-		if (!signal)
-			signal = "UNKNOWN";
-		lprintf("[ERROR]: Received signal %s - exiting...\n", signal);
-		exit(0);
-	}
-	exit(signum);	// destructor called manually
-}
-
-void destructor(int error)
-{
-	manualHandlerCall = true;
-	_destructor(error);
-}
 
 static void fill_sockaddr(struct sockaddr_un *sock)
 {
@@ -102,7 +76,7 @@ out:
 }
 
 void dummy() { return; }
-static void open_socket()
+void open_socket()
 {
 	struct sockaddr_un sock = { 0 };
 	
@@ -129,27 +103,15 @@ static void open_socket()
 
 	check( listen(sockfd, 5) )
 	check( bind(sockfd, &sock, sizeof(struct sockaddr_un)) )
-	opened = true;
+	shouldDeleteSocket = true;
 }
 
 int main()
 {
 	int fd, pid;
 	sigset_t handled;
-	struct sigaction sig = {
-		.sa_flags = SA_NOCLDWAIT,
-		.sa_handler = SIG_DFL
-	};
-
-	check( prctl(PR_SET_NAME, "jma_Iserver") )
-	load_environment();
-	check_sig(SIGTERM, _destructor)
-	check_sig(SIGINT, _destructor)
-	check( sigaction(SIGCHLD, &sig, NULL) )
-	open_socket();
-	daemonize();
-	log_stdio();
-
+	
+	init_program();
 	check( sigaddset(&handled, SIGTERM) )
 	check( sigaddset(&handled, SIGINT) )
 	while (1) {
@@ -158,7 +120,7 @@ int main()
 		check( pid = fork() )
 		if (pid == 0) {
 			sockfd = fd;
-			opened = false;
+			shouldDeleteSocket = false;
 			check( sigprocmask(SIG_UNBLOCK, &handled, NULL) )
 			check( close(sockfd) )
 			log_stdio();	// Reopen log file so that flock() works on separate fds

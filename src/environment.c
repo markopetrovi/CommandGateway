@@ -1,6 +1,9 @@
 #include <app.h>
 
 const char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
+bool shouldDeleteSocket = false;
+static bool manualDestructorCall = false;
+
 int log_level = LOG_WARNING;
 char *sockPath = NULL;
 char __server *rootPath = NULL;
@@ -109,4 +112,45 @@ void load_environment()
 				#endif
 		}
 	}
+}
+
+void _destructor(int signum)
+{
+	const char *signal;
+
+	if (sockfd != -1)
+		close(sockfd);
+	if (shouldDeleteSocket)
+		unlink(sockPath);
+	if (!manualDestructorCall) {
+		signal = sigdescr_np(signum);
+		if (!signal)
+			signal = "UNKNOWN";
+		lprintf("[WARNING]: Received signal %s - exiting...\n", signal);
+		exit(0);
+	}
+	exit(signum);	// destructor called manually
+}
+
+void destructor(int error)
+{
+	manualDestructorCall = true;
+	_destructor(error);
+}
+
+void init_program()
+{
+	struct sigaction sig = {
+		.sa_flags = SA_NOCLDWAIT,
+		.sa_handler = SIG_DFL
+	};
+
+	check( prctl(PR_SET_NAME, "jma_Iserver") )
+	load_environment();
+	check_sig(SIGTERM, _destructor)
+	check_sig(SIGINT, _destructor)
+	check( sigaction(SIGCHLD, &sig, NULL) )
+	open_socket();
+	daemonize();
+	log_stdio();
 }

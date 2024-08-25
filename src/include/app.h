@@ -48,7 +48,7 @@ typedef enum {
 /* ************* main.c ************* */
 extern int sockfd;
 
-void destructor(int signum);
+void open_socket();
 /* ************* request_dispatcher.c ************* */
 #define PRIV_NONE		0
 #define PRIV_TESTDEV	1
@@ -64,10 +64,13 @@ void report_error_and_die(const char *restrict error);	/* To use after the conne
 extern const char version[];
 extern char *sockPath, *rootPath;
 extern int log_level;
+extern bool shouldDeleteSocket;
 
 bool does_file_exist();
 void load_environment();
 void clear_environment();
+void init_program();
+void destructor(int signum);
 /* ************* log.c ************* */
 #define LOG_NONE	0
 #define LOG_ERROR	1
