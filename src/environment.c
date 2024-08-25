@@ -145,12 +145,28 @@ void init_program()
 		.sa_handler = SIG_DFL
 	};
 
+	#ifdef SERVER_BUILD
 	check( prctl(PR_SET_NAME, "jma_Iserver") )
+	#elif CLIENT_BUILD
+	check( prctl(PR_SET_NAME, "jma_Iclient") )
+	#endif
 	load_environment();
 	check_sig(SIGTERM, _destructor)
 	check_sig(SIGINT, _destructor)
 	check( sigaction(SIGCHLD, &sig, NULL) )
 	open_socket();
+	#ifdef SERVER_BUILD
 	daemonize();
 	log_stdio();
+	#endif
+}
+
+void set_timeout(int fd)
+{
+	struct timeval timeout;
+
+	timeout.tv_sec = timeout_seconds;
+	timeout.tv_usec = 0;
+	check( setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval)) )
+	check( setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(struct timeval)) )
 }

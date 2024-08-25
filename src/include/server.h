@@ -14,7 +14,5 @@ void log_stdio();
 extern time_t timeout_seconds;
 
 void daemonize();
-/* ************* server.c ************* */
-void set_timeout(int fd);
 
 #endif /* _SERVER_H */

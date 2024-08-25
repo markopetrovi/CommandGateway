@@ -71,6 +71,7 @@ void load_environment();
 void clear_environment();
 void init_program();
 void destructor(int signum);
+void set_timeout(int fd);
 /* ************* log.c ************* */
 #define LOG_NONE	0
 #define LOG_ERROR	1

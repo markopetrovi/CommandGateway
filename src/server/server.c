@@ -12,16 +12,6 @@ static void fill_sockaddr(struct sockaddr_un *sock)
 	strcpy(sock->sun_path, sockPath);
 }
 
-void set_timeout(int fd)
-{
-	struct timeval timeout;
-
-	timeout.tv_sec = timeout_seconds;
-	timeout.tv_usec = 0;
-	check( setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(struct timeval)) )
-	check( setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(struct timeval)) )
-}
-
 static void get_server_info()
 {
 	struct ucred cred;
