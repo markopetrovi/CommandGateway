@@ -1,4 +1,4 @@
-#include "app.h"
+#include <app.h>
 
 char *sockPath = NULL, *rootPath = NULL;
 time_t timeout_seconds = 5;

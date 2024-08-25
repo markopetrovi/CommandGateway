@@ -13,7 +13,12 @@ It has been adapted to serve as a command gateway for Docker containers, allowin
  - LOG_LEVEL (optional, default: INFO) - Possible values: NONE, ERROR, WARNING, INFO, DEBUG
  - TIMEOUT (optional, default: 5) - Time in seconds for the maximum duration of socket operations
 # Compiling
-`gcc *.c -O3 -Wall -Werror -Wno-parentheses -o server`
+ - To build codebase as server, use:
+`make` or `make server`
+ - To build codebase as client, use:
+`make client`
+ - To clean the repository from generated binaries, use:
+`make clean`
 # TODO
  - Make container subvolumes path a configuration option (instead of hardcoded value)
  - Make group names associated with privileges a configuration option (instead of hardcoded value)
