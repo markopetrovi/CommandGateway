@@ -113,18 +113,23 @@ static void load_environment()
 	if (log_level_str) {
 		switch (log_level_str[0]) {
 			case 'N':
+			case 'n':
 				log_level = LOG_NONE;
 				break;
 			case 'E':
+			case 'e':
 				log_level = LOG_ERROR;
 				break;
 			case 'W':
+			case 'w':
 				log_level = LOG_WARNING;
 				break;
 			case 'I':
+			case 'i':
 				log_level = LOG_INFO;
 				break;
 			case 'D':
+			case 'd':
 				log_level = LOG_DEBUG;
 				break;
 			default:
