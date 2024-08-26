@@ -94,13 +94,13 @@ static void get_peer_credentails()
 		report_error_and_die("Cannot get peer group privileges.\n");
 	}
 	while (p=fgetgrent(fp)) {
-		if (!strcmp(p->gr_name, "jmatestdev") && find_uid(p->gr_mem))
+		if (!strcmp(p->gr_name, group_testdev) && find_uid(p->gr_mem))
 			privs = PRIV_TESTDEV;
-		if (!strcmp(p->gr_name, "jmadev") && find_uid(p->gr_mem))
+		if (!strcmp(p->gr_name, group_dev) && find_uid(p->gr_mem))
 			privs = PRIV_DEV;
-		if (!strcmp(p->gr_name, "jmaadmin") && find_uid(p->gr_mem))
+		if (!strcmp(p->gr_name, group_admin) && find_uid(p->gr_mem))
 			privs = PRIV_ADMIN;
-		if (!strcmp(p->gr_name, "jmaroot") && find_uid(p->gr_mem))
+		if (!strcmp(p->gr_name, group_superuser) && find_uid(p->gr_mem))
 			privs = PRIV_SUPERUSER;
 	}
 	fclose(fp);

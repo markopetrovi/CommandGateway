@@ -12,6 +12,7 @@ It has been adapted to serve as a command gateway for Docker containers, allowin
  - ROOT_PATH (mandatory, server-only) - name of the root directory relative to which /etc/group and /etc/passwd are searched. For client, defaults to /
  - LOG_LEVEL (optional, default: WARNING) - Possible values: NONE, ERROR, WARNING, INFO, DEBUG
  - TIMEOUT (optional, default: 5) - Time in seconds for the maximum duration of socket operations that are expected not to wait long
+ - GROUP_TESTDEV, GROUP_DEV, GROUP_ADMIN, GROUP_SUPERUSER (optional, server-only): Specify the group name associated with given privilege level. Overrides defaults (jmatestdev, jmadev, jmaadmin, jmaroot)
 # Command line arguments (server-only)
  - `-f / --foreground` Do not daemonize the server. Logs are redirected to stdout
 # Compiling
@@ -21,6 +22,3 @@ It has been adapted to serve as a command gateway for Docker containers, allowin
 `make client`
  - To clean the repository from generated binaries, use:
 `make clean`
-# TODO
- - Make container subvolumes path a configuration option (instead of hardcoded value)
- - Make group names associated with privileges a configuration option (instead of hardcoded value)

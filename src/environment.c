@@ -8,6 +8,9 @@ static time_t timeout_seconds = 5;
 int log_level = LOG_WARNING;
 char *sockPath = NULL;
 char __server *rootPath = NULL;
+char __server *group_testdev = "jmatestdev", *group_dev = "jmadev";
+char __server *group_admin = "jmaadmin", *group_superuser = "jmaroot";
+
 
 void __server daemonize()
 {
@@ -44,6 +47,8 @@ void clear_environment()
 
 void __server load_server_env()
 {
+	char *groupName;
+
 	rootPath = getenv("ROOT_PATH");
 	if (!rootPath) {
 		lprintf("[ERROR]: Missing ROOT_PATH environment variable.\n");
@@ -53,6 +58,23 @@ void __server load_server_env()
 		lprintf("[ERROR]: Supplied ROOT_PATH folder does not exist\n");
 		destructor(ENOENT);
 	}
+
+	groupName = getenv("GROUP_TESTDEV");
+	if (groupName)
+		group_testdev = groupName;
+	groupName = getenv("GROUP_DEV");
+	if (groupName)
+		group_dev = groupName;
+	groupName = getenv("GROUP_ADMIN");
+	if (groupName)
+		group_admin = groupName;
+	groupName = getenv("GROUP_SUPERUSER");
+	if (groupName)
+		group_superuser = groupName;
+	lprintf("[INFO]: Using %s for GROUP_TESTDEV\n", group_testdev);
+	lprintf("[INFO]: Using %s for GROUP_DEV\n", group_dev);
+	lprintf("[INFO]: Using %s for GROUP_ADMIN\n", group_admin);
+	lprintf("[INFO]: Using %s for GROUP_SUPERUSER\n", group_superuser);
 }
 
 static void load_environment()
