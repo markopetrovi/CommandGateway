@@ -44,16 +44,13 @@ void clear_environment()
 
 void __server load_server_env()
 {
-	char *containerID;
-
-	containerID = getenv("CONTAINER_SUBVOL_ID");
-	if (!containerID) {
-		lprintf("[ERROR]: Missing CONTAINER_SUBVOL_ID environment variable.\n");
+	rootPath = getenv("ROOT_PATH");
+	if (!rootPath) {
+		lprintf("[ERROR]: Missing ROOT_PATH environment variable.\n");
 		destructor(EINVAL);
 	}
-	check( asprintf(&rootPath, "/var/lib/docker/btrfs/subvolumes/%s", containerID) )
 	if (!does_file_exist(rootPath)) {
-		lprintf("[ERROR]: Supplied container does not exist in /var/lib/docker/btrfs/subvolumes\n");
+		lprintf("[ERROR]: Supplied ROOT_PATH folder does not exist\n");
 		destructor(ENOENT);
 	}
 }
