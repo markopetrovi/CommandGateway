@@ -17,6 +17,7 @@
 #include <linux/prctl.h>
 #include <sys/prctl.h>
 #include <fcntl.h>
+#include <sys/uio.h>
 
 #ifdef CLIENT_BUILD
 #include <client.h>
@@ -58,8 +59,7 @@ void open_socket();
 
 extern int privs;
 
-void dispatch_request();
-void report_error_and_die(const char *restrict error);	/* To use after the connection is established */
+void dispatch_request(char *buf);
 /* ************* environment.c ************* */
 extern const char version[];
 extern __server_data char *log_path;
@@ -88,7 +88,9 @@ int lvfprintf(FILE *restrict stream, const char *restrict format, va_list ap, Ac
 void lperror(const char *s);
 #define dlperror(s)	lperror(__FILE__ ":" TOSTRING(__LINE__) ":" s)
 /* ************* IO.c ************* */
-ssize_t lread(int fd, void *buf, size_t count);
-ssize_t lwrite(int fd, const void *buf, size_t count);
+int sread(int fd, struct iovec *buf, int count);
+void swrite(int fd, const struct iovec *buf, int count);
+void send_socket(int fd, const char *restrict anc, const char *restrict data);
+void read_socket(int fd, struct iovec *io);
 
 #endif /* APP_H */
