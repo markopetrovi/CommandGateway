@@ -9,6 +9,4 @@
 #define __server_data __attribute__((section(".discard.server.data"), unused))
 #define __client_data __attribute__((section(".client.data")))
 
-struct argv_options { char unimplemented; };
-
 #endif /* _CLIENT_H */

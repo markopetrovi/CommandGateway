@@ -9,7 +9,7 @@
 #define __server_data __attribute__((section(".server.data")))
 #define __client_data __attribute__((section(".discard.client.data"), unused))
 
-struct argv_options {
+struct server_options {
     bool is_foreground;
 };
 
@@ -17,8 +17,6 @@ struct argv_options {
 void log_stdio();
 
 /* ************* environment.c ************* */
-extern char *log_path;
-
 void daemonize();
 
 #endif /* _SERVER_H */

@@ -164,9 +164,10 @@ void destructor(int error)
 	_destructor(error);
 }
 
-static __server struct argv_options parse_server_options(int argc, char* argv[])
+#ifdef SERVER_BUILD
+static __server struct server_options parse_server_options(int argc, char* argv[])
 {
-	struct argv_options options = { 0 };
+	struct server_options options = { 0 };
 	
 	for (int i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--foreground")) {
@@ -178,10 +179,10 @@ static __server struct argv_options parse_server_options(int argc, char* argv[])
 
 	return options;
 }
+#endif
 
 void init_program(int argc, char* argv[])
 {
-	struct argv_options options;
 	struct sigaction sig = {
 		.sa_flags = SA_NOCLDWAIT,
 		.sa_handler = SIG_DFL
@@ -198,6 +199,7 @@ void init_program(int argc, char* argv[])
 	check( sigaction(SIGCHLD, &sig, NULL) )
 	open_socket();
 	#ifdef SERVER_BUILD
+	struct server_options options;
 	options = parse_server_options(argc, argv);
 	if (!options.is_foreground) {
 		daemonize();
