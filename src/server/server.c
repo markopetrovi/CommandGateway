@@ -82,8 +82,8 @@ void open_socket()
 		}
 	}
 
-	check( listen(sockfd, 5) )
 	check( bind(sockfd, &sock, sizeof(struct sockaddr_un)) )
+	check( listen(sockfd, 5) )
 	shouldDeleteSocket = true;
 	lprintf("[DEBUG]: Started listening on socket %s\n", sockPath);
 }
