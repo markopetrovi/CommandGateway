@@ -4,8 +4,10 @@
 #ifdef _CLIENT_H
 #error "Trying to build the client with server headers included"
 #endif
-#define __server __attribute__((section(".server"TOSTRING(__COUNTER__))))
-#define __client __attribute__((section(".discard.client"TOSTRING(__COUNTER__))))
+#define __server __attribute__((section(".server.text")))
+#define __client __attribute__((section(".discard.client.text")))
+#define __server_data __attribute__((section(".server.data")))
+#define __client_data __attribute__((section(".discard.client.data")))
 
 struct argv_options {
     bool is_foreground;

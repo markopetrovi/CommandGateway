@@ -7,9 +7,9 @@ static time_t timeout_seconds = 5;
 
 int log_level = LOG_WARNING;
 char *sockPath = NULL, *rootPath = "/";
-char __server *log_path = "/var/log/cg.log";
-char __server *group_testdev = "jmatestdev", *group_dev = "jmadev";
-char __server *group_admin = "jmaadmin", *group_superuser = "jmaroot";
+char __server_data *log_path = "/var/log/cg.log";
+char __server_data *group_testdev = "jmatestdev", *group_dev = "jmadev";
+char __server_data *group_admin = "jmaadmin", *group_superuser = "jmaroot";
 
 
 void __server daemonize()
