@@ -8,8 +8,8 @@ static time_t timeout_seconds = 5;
 int log_level = LOG_WARNING;
 char *sockPath = NULL, *rootPath = "/";
 char __server_data *log_path = "/var/log/cg.log";
-char __server_data *group_testdev = "jmatestdev", *group_dev = "jmadev";
-char __server_data *group_admin = "jmaadmin", *group_superuser = "jmaroot";
+char *group_testdev = "jmatestdev", *group_dev = "jmadev";
+char *group_admin = "jmaadmin", *group_superuser = "jmaroot";
 
 
 void __server daemonize()
@@ -45,18 +45,9 @@ void clear_environment()
 	unsetenv("TIMEOUT");
 }
 
-void __server load_server_env()
+static void load_groups()
 {
 	char *isPresent;
-
-	isPresent = getenv("ROOT_PATH");
-	if (isPresent)
-		rootPath = isPresent;
-	lprintf("[INFO]: Using %s for ROOT_PATH\n", rootPath);
-	if (!does_file_exist(rootPath)) {
-		lprintf("[ERROR]: Supplied ROOT_PATH folder \"%s\" does not exist\n", rootPath);
-		destructor(ENOENT);
-	}
 
 	isPresent = getenv("GROUP_TESTDEV");
 	if (isPresent)
@@ -70,14 +61,30 @@ void __server load_server_env()
 	isPresent = getenv("GROUP_SUPERUSER");
 	if (isPresent)
 		group_superuser = isPresent;
-	isPresent = getenv("LOG_PATH");
-	if (isPresent)
-		log_path = isPresent;
-	lprintf("[INFO]: Using %s for LOG_PATH\n", log_path);
+
 	lprintf("[INFO]: Using %s for GROUP_TESTDEV\n", group_testdev);
 	lprintf("[INFO]: Using %s for GROUP_DEV\n", group_dev);
 	lprintf("[INFO]: Using %s for GROUP_ADMIN\n", group_admin);
 	lprintf("[INFO]: Using %s for GROUP_SUPERUSER\n", group_superuser);
+}
+
+static void __server load_server_env()
+{
+	char *isPresent;
+
+	isPresent = getenv("ROOT_PATH");
+	if (isPresent)
+		rootPath = isPresent;
+	lprintf("[INFO]: Using %s for ROOT_PATH\n", rootPath);
+	if (!does_file_exist(rootPath)) {
+		lprintf("[ERROR]: Supplied ROOT_PATH folder \"%s\" does not exist\n", rootPath);
+		destructor(ENOENT);
+	}
+
+	isPresent = getenv("LOG_PATH");
+	if (isPresent)
+		log_path = isPresent;
+	lprintf("[INFO]: Using %s for LOG_PATH\n", log_path);
 }
 
 static void load_environment()
@@ -87,6 +94,7 @@ static void load_environment()
 	#ifdef SERVER_BUILD
 	load_server_env();
 	#endif
+	load_groups();
 	relative_sockPath = getenv("SOCK_PATH");
 	if (!relative_sockPath)
 		relative_sockPath = "/tmp/cgsocket";

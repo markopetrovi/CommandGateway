@@ -13,7 +13,7 @@ It has been adapted to serve as a command gateway for Docker containers, allowin
  - LOG_LEVEL (default: WARNING) - Possible values: NONE, ERROR, WARNING, INFO, DEBUG
  - LOG_PATH (server-only, default: /var/log/cg.log) - Where to save the daemon log
  - TIMEOUT (default: 5) - Time in seconds for the maximum duration of socket operations that are expected not to wait long
- - GROUP_TESTDEV, GROUP_DEV, GROUP_ADMIN, GROUP_SUPERUSER (server-only): Specify the group name associated with given privilege level. Overrides defaults (jmatestdev, jmadev, jmaadmin, jmaroot)
+ - GROUP_TESTDEV, GROUP_DEV, GROUP_ADMIN, GROUP_SUPERUSER: Specify the group name associated with given privilege level. Overrides defaults (jmatestdev, jmadev, jmaadmin, jmaroot)
 # Command line arguments (server-only)
  - `-f / --foreground` Do not daemonize the server. Logs are redirected to stdout
 # Compiling

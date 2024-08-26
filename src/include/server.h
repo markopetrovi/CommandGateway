@@ -17,7 +17,7 @@ struct argv_options {
 void log_stdio();
 
 /* ************* environment.c ************* */
-extern char *log_path, *group_testdev, *group_dev, *group_admin, *group_superuser;
+extern char *log_path;
 
 void daemonize();
 
