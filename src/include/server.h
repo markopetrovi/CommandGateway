@@ -7,6 +7,10 @@
 #define __server __attribute__((section(".server"TOSTRING(__COUNTER__))))
 #define __client __attribute__((section(".discard.client"TOSTRING(__COUNTER__))))
 
+struct argv_options {
+    bool is_foreground;
+};
+
 /* ************* log.c ************* */
 void log_stdio();
 

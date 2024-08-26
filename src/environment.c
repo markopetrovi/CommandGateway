@@ -58,7 +58,7 @@ void __server load_server_env()
 	}
 }
 
-void load_environment()
+static void load_environment()
 {
 	char *log_level_str, *relative_sockPath, *timeout_str;
 
@@ -142,8 +142,24 @@ void destructor(int error)
 	_destructor(error);
 }
 
-void init_program()
+static __server struct argv_options parse_server_options(int argc, char* argv[])
 {
+	struct argv_options options = { 0 };
+	
+	for (int i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--foreground")) {
+			options.is_foreground = true;
+			continue;
+		}
+		lprintf("[WARNING]: Unknown option %s\n", argv[i]);
+	}
+
+	return options;
+}
+
+void init_program(int argc, char* argv[])
+{
+	struct argv_options options;
 	struct sigaction sig = {
 		.sa_flags = SA_NOCLDWAIT,
 		.sa_handler = SIG_DFL
@@ -160,8 +176,11 @@ void init_program()
 	check( sigaction(SIGCHLD, &sig, NULL) )
 	open_socket();
 	#ifdef SERVER_BUILD
-	daemonize();
-	log_stdio();
+	options = parse_server_options(argc, argv);
+	if (!options.is_foreground) {
+		daemonize();
+		log_stdio();
+	}
 	#endif
 }
 

@@ -67,9 +67,8 @@ extern int log_level;
 extern bool shouldDeleteSocket;
 
 bool does_file_exist();
-void load_environment();
 void clear_environment();
-void init_program();
+void init_program(int argc, char* argv[]);
 void destructor(int signum);
 void set_timeout(int fd);
 void fill_sockaddr(struct sockaddr_un *sock);

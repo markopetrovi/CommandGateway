@@ -15,5 +15,5 @@ void open_socket()
 
 int main(int argc, char *argv[])
 {
-    init_program();
+    init_program(argc, argv);
 }

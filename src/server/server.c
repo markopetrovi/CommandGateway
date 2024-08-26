@@ -88,12 +88,12 @@ void open_socket()
 	lprintf("[DEBUG]: Started listening on socket %s\n", sockPath);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	int fd, pid;
 	sigset_t handled;
 	
-	init_program();
+	init_program(argc, argv);
 	check( sigaddset(&handled, SIGTERM) )
 	check( sigaddset(&handled, SIGINT) )
 	while (1) {
