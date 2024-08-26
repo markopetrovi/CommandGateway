@@ -150,11 +150,11 @@ void __server log_stdio()
 {
 	int fd, nullfd;
 
-	fd = open("/var/log/jma_server.log", O_CREAT | O_RDWR | O_APPEND | O_CLOEXEC, 0600);
+	fd = open(log_path, O_CREAT | O_RDWR | O_APPEND | O_CLOEXEC, 0600);
 	check( nullfd = open("/dev/null", O_RDWR | O_CLOEXEC) )
 	if (fd < 0) {
 		dlperror("open");
-		lprintf("[WARNING]: Cannot open /var/log/jma_server.log\n");
+		lprintf("[WARNING]: Cannot open %s\n", log_path);
 		lprintf("[WARNING]: No logging functionality present.\n");
 		fd = nullfd;
 	}

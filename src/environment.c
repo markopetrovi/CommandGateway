@@ -6,8 +6,8 @@ static bool manualDestructorCall = false;
 static time_t timeout_seconds = 5;
 
 int log_level = LOG_WARNING;
-char *sockPath = NULL;
-char __server *rootPath = NULL;
+char *sockPath = NULL, *rootPath = "/";
+char __server *log_path = "/var/log/cg.log";
 char __server *group_testdev = "jmatestdev", *group_dev = "jmadev";
 char __server *group_admin = "jmaadmin", *group_superuser = "jmaroot";
 
@@ -47,30 +47,33 @@ void clear_environment()
 
 void __server load_server_env()
 {
-	char *groupName;
+	char *isPresent;
 
-	rootPath = getenv("ROOT_PATH");
-	if (!rootPath) {
-		lprintf("[ERROR]: Missing ROOT_PATH environment variable.\n");
-		destructor(EINVAL);
-	}
+	isPresent = getenv("ROOT_PATH");
+	if (isPresent)
+		rootPath = isPresent;
+	lprintf("[INFO]: Using %s for ROOT_PATH\n", rootPath);
 	if (!does_file_exist(rootPath)) {
 		lprintf("[ERROR]: Supplied ROOT_PATH folder \"%s\" does not exist\n", rootPath);
 		destructor(ENOENT);
 	}
 
-	groupName = getenv("GROUP_TESTDEV");
-	if (groupName)
-		group_testdev = groupName;
-	groupName = getenv("GROUP_DEV");
-	if (groupName)
-		group_dev = groupName;
-	groupName = getenv("GROUP_ADMIN");
-	if (groupName)
-		group_admin = groupName;
-	groupName = getenv("GROUP_SUPERUSER");
-	if (groupName)
-		group_superuser = groupName;
+	isPresent = getenv("GROUP_TESTDEV");
+	if (isPresent)
+		group_testdev = isPresent;
+	isPresent = getenv("GROUP_DEV");
+	if (isPresent)
+		group_dev = isPresent;
+	isPresent = getenv("GROUP_ADMIN");
+	if (isPresent)
+		group_admin = isPresent;
+	isPresent = getenv("GROUP_SUPERUSER");
+	if (isPresent)
+		group_superuser = isPresent;
+	isPresent = getenv("LOG_PATH");
+	if (isPresent)
+		log_path = isPresent;
+	lprintf("[INFO]: Using %s for LOG_PATH\n", log_path);
 	lprintf("[INFO]: Using %s for GROUP_TESTDEV\n", group_testdev);
 	lprintf("[INFO]: Using %s for GROUP_DEV\n", group_dev);
 	lprintf("[INFO]: Using %s for GROUP_ADMIN\n", group_admin);
@@ -85,25 +88,17 @@ static void load_environment()
 	load_server_env();
 	#endif
 	relative_sockPath = getenv("SOCK_PATH");
-	if (!relative_sockPath) {
-		#ifdef SERVER_BUILD
-		lprintf("[ERROR]: Missing SOCK_PATH environment variable.\n");
-		destructor(EINVAL);
-		#elif CLIENT_BUILD
+	if (!relative_sockPath)
 		relative_sockPath = "/tmp/cgsocket";
-		#endif
-	}
-	#ifdef SERVER_BUILD
+	lprintf("[INFO]: Using %s for SOCK_PATH\n", relative_sockPath);
 	check( asprintf(&sockPath, "%s/%s", rootPath, relative_sockPath) )
-	#elif CLIENT_BUILD
-	sockPath = relative_sockPath;
-	#endif
 
 	timeout_str = getenv("TIMEOUT");
 	if (timeout_str) {
 		timeout_seconds = atoi(timeout_str);
 		if (!timeout_seconds)
 			lprintf("[WARNING]: Socket timeout disabled. Operations can block indefinitely.\n");
+		lprintf("[INFO]: Socket TIMEOUT set to %i\n", timeout_seconds);
 	}
 
 	log_level_str = getenv("LOG_LEVEL");

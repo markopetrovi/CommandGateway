@@ -62,7 +62,7 @@ void dispatch_request();
 void report_error_and_die(const char *restrict error);	/* To use after the connection is established */
 /* ************* environment.c ************* */
 extern const char version[];
-extern char *sockPath;
+extern char *sockPath, *rootPath;
 extern int log_level;
 extern bool shouldDeleteSocket;
 
