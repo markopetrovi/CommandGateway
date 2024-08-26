@@ -104,6 +104,12 @@ int lvfprintf(FILE *restrict stream, const char *restrict format, va_list ap, Ac
 		a = check_lprintf_format(format);
 	if (a == ABORT)
 		return 0;
+	if (!redirected_stdio) {
+		/* Bypass log formatting */
+		ret = vfprintf(stream, format, ap);
+		errno = olderrno;
+		return ret;
+	}
 
 	INIT_LINE_PTR(line_ptr)
 	if (a == FALLBACK)
