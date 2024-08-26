@@ -49,7 +49,7 @@ typedef enum {
 /* ************* main.c ************* */
 extern int sockfd;
 
-void open_socket();
+void open_socket();	/* Calls open_socket() */
 /* ************* request_dispatcher.c ************* */
 #define PRIV_NONE		0
 #define PRIV_TESTDEV	1
@@ -58,8 +58,9 @@ void open_socket();
 #define PRIV_SUPERUSER	4
 
 extern int privs;
+extern char *peerName;
 
-void dispatch_request(char *buf);
+void dispatch_request();
 /* ************* environment.c ************* */
 extern const char version[];
 extern __server_data char *log_path;
@@ -92,5 +93,8 @@ int sread(int fd, struct iovec *buf, int count);
 void swrite(int fd, const struct iovec *buf, int count);
 void send_socket(int fd, const char *restrict anc, const char *restrict data);
 void read_socket(int fd, struct iovec *io);
+/* ************* builtin.c ************* */
+void print_version();
+void print_from_remote(bool isError, const char *string);
 
 #endif /* APP_H */

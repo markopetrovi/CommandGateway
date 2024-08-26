@@ -2,28 +2,19 @@
 #include <pwd.h>
 #include <grp.h>
 
-static char *clientName = "UNIDENTIFIED";
+char *peerName = "UNIDENTIFIED";
 int privs = PRIV_NONE;
 
-#ifdef SERVER_BUILD
-void report_error_and_die(const char *restrict error)
+static void report_error_and_die(const char *restrict error)
 {
-	static const char r[] = "Connection closed.\n";
 	int olderrno = errno;
 
-	write(sockfd, error, strlen(error));
-	write(sockfd, r, sizeof(r));
-	lprintf("[ERROR]: %s\n", error);
-	lprintf("[ERROR]: Connection with client %s closed.\n", clientName);
+	send_socket(sockfd, "PRINTERR", error);
+	send_socket(sockfd, "PRINTERR", "Connection closed.\n");
+	lprintf("[ERROR]: %s", error);
+	lprintf("[ERROR]: Connection with %s closed.\n", peerName);
 	destructor(olderrno);
 }
-#elif CLIENT_BUILD
-void report_error_and_die(const char *restrict error)
-{
-	lprintf("[ERROR] [Client]: %s\n", error);
-	destructor(errno);
-}
-#endif
 
 static uid_t get_peer_uid()
 {
@@ -52,12 +43,12 @@ static void get_peer_name(uid_t uid)
 	}
 	while (p=fgetpwent(fp)) {
 		if (p->pw_uid == uid) {
-			clientName = malloc(strlen(p->pw_name) + 1);
-			if (!clientName) {
+			peerName = malloc(strlen(p->pw_name) + 1);
+			if (!peerName) {
 				dlperror("malloc");
-				report_error_and_die("Server failed.");
+				report_error_and_die("Dispatcher failed.\n");
 			}
-			strcpy(clientName, p->pw_name);
+			strcpy(peerName, p->pw_name);
 			fclose(fp);
 			return;
 		}
@@ -70,7 +61,7 @@ static void get_peer_name(uid_t uid)
 static bool find_uid(char* gr_mem[])
 {
 	for (int i = 0; gr_mem[i] != NULL; i++) {
-		if (!strcmp(gr_mem[i], clientName))
+		if (!strcmp(gr_mem[i], peerName))
 			return true;
 	}
 	return false;
@@ -84,6 +75,11 @@ static void get_peer_credentails()
 	uid_t uid;
 
 	uid = get_peer_uid();
+	if (uid == 0) {
+		peerName = "root";
+		privs = PRIV_SUPERUSER;
+		return;
+	}
 	get_peer_name(uid);
 
 	check( asprintf(&path, "%s/etc/group", rootPath) )
@@ -108,38 +104,46 @@ static void get_peer_credentails()
 	report_error_and_die("Cannot get peer group privileges.\n");
 }
 
+static short parse_commands(struct iovec *io)
+{
+	if (!strcmp(io[0].iov_base, "END")) {
+		return 1;
+	}
+	if (!strcmp(io[0].iov_base, "info")) {
+		print_version();
+		return 0;
+	}
+	if (!strcmp(io[0].iov_base, "PRINT")) {
+		print_from_remote(false, io[1].iov_base);
+		return 0;
+	}
+	if (!strcmp(io[0].iov_base, "PRINTERR")) {
+		print_from_remote(true, io[1].iov_base);
+		return 0;
+	}
+	return -1;
+}
+
 /* command_id args*/
 void dispatch_request()
 {
-	char *buf = malloc(BUF_SIZE+1);
+	struct iovec io[2];
+	short ret = 0;
 
-	if (unlikely(!buf)) {
-		dlperror("malloc");
-		report_error_and_die("Server failed.");
-	}
-
-	buf[BUF_SIZE] = '\0';
-	buf[0] = '\0';
 	check( prctl(PR_SET_NAME, "jma_Idispatcher") )
-	set_timeout(sockfd);
 
 	get_peer_credentails();
-	lprintf("[INFO]: Established connection with %s\n", clientName);
-	lread(sockfd, buf, BUF_SIZE);
-
-	/* Check command */
-	static const char info[] = "info";
-
-	if (!strcmp(buf, info)) {
-		lwrite(sockfd, version, strlen(version));
-		goto out;
+	lprintf("[INFO]: Getting command requests from %s...\n", peerName);
+	while (ret == 0) {
+		read_socket(sockfd, io);
+		ret = parse_commands(io);
+		if (ret == -1) {
+			errno = ENOSYS;
+			char *buf;
+			check( asprintf(&buf, "Peer requested unimplemented command: %s\n", buf) )
+			report_error_and_die(buf);
+		}
+		lprintf("[INFO]: Peer %s executed %s command.\n", peerName, io[0].iov_base);
 	}
-
-	errno = ENOSYS;
-	lprintf("[WARNING]: Client %s requested unimplemented command: %s\n", clientName, buf);
-	report_error_and_die("Unimplemented command.\n");
-out:
-	lprintf("[INFO]: Client %s executed %s command.\n", clientName, buf);
-	lprintf("[INFO]: Successfully disconnected from client %s\n", clientName);
-	destructor(0);
+	lprintf("[INFO]: Successfully disconnected from peer %s\n", peerName);
 }

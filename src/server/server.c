@@ -42,16 +42,10 @@ out:
 		free(commPath);
 	}
 
-	if (write(sockfd, "info", 5) < 0)
-		dlperror("write");
-
-	if (read(sockfd, buf, BUF_SIZE) > 0) {
-		lprintf("[INFO]: Process responded to info query with: %s\n", buf);
-	}
-	else {
-		dlperror("read");
-		lprintf("[INFO]: Process didn't respond to info query.\n");
-	}
+	lprintf("[INFO]: Asking remote for info...\n");
+	send_socket(sockfd, "info", "");
+	dispatch_request();
+	send_socket(sockfd, "END", "");
 	free(buf);
 }
 
@@ -65,7 +59,7 @@ void open_socket()
 	check( sockfd=socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0) )
 	if (does_file_exist(sockPath)) {
 		check_sig(SIGALRM, dummy)
-		alarm(1);	// Interrupt connect if taking too long
+		alarm(1);	/* Interrupt connect if taking too long */
 		if (connect(sockfd, &sock, sizeof(struct sockaddr_un))) {
 			alarm(0);
 			check_sig(SIGALRM, SIG_DFL)
@@ -99,15 +93,16 @@ int main(int argc, char *argv[])
 	check( sigaddset(&handled, SIGPIPE) )
 	while (1) {
 		check( fd = accept4(sockfd, NULL, NULL, SOCK_CLOEXEC) )
-		check( sigprocmask(SIG_BLOCK, &handled, NULL) )	// Prevent race condition in which the child calls destructor() too early
+		check( sigprocmask(SIG_BLOCK, &handled, NULL) )	/* Prevent race condition in which the child calls destructor() too early */
 		check( pid = fork() )
 		if (pid == 0) {
 			sockfd = fd;
 			shouldDeleteSocket = false;
 			check( sigprocmask(SIG_UNBLOCK, &handled, NULL) )
 			check( close(sockfd) )
-			log_stdio();	// Reopen log file so that flock() works on separate fds
-			check( kill(pid, SIGCONT) )
+			log_stdio();	/* Reopen log file so that flock() works on separate fds */
+			check( kill(getppid(), SIGCONT) )
+			set_timeout(sockfd);
 			dispatch_request();
 			destructor(0);
 		}
