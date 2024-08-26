@@ -63,7 +63,7 @@ void open_socket()
 	lprintf("[DEBUG]: Opening listening socket...\n");
 	fill_sockaddr(&sock);
 	check( sockfd=socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0) )
-	if (does_file_exist()) {
+	if (does_file_exist(sockPath)) {
 		check_sig(SIGALRM, dummy)
 		alarm(1);	// Interrupt connect if taking too long
 		if (connect(sockfd, &sock, sizeof(struct sockaddr_un))) {

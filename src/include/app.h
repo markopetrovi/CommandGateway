@@ -66,7 +66,7 @@ extern char *sockPath;
 extern int log_level;
 extern bool shouldDeleteSocket;
 
-bool does_file_exist();
+bool does_file_exist(char *path);
 void clear_environment();
 void init_program(int argc, char* argv[]);
 void destructor(int signum);

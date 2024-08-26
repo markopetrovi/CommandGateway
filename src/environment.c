@@ -27,10 +27,10 @@ void __server daemonize()
 		exit(0);
 }
 
-bool does_file_exist()
+bool does_file_exist(char *path)
 {
 	int fd;
-	fd = open(sockPath, O_PATH);
+	fd = open(path, O_PATH);
 	if (fd < 0)
 		return false;
 	check( close(fd) )
@@ -55,7 +55,7 @@ void __server load_server_env()
 		destructor(EINVAL);
 	}
 	if (!does_file_exist(rootPath)) {
-		lprintf("[ERROR]: Supplied ROOT_PATH folder does not exist\n");
+		lprintf("[ERROR]: Supplied ROOT_PATH folder \"%s\" does not exist\n", rootPath);
 		destructor(ENOENT);
 	}
 
