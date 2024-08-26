@@ -199,6 +199,7 @@ void init_program(int argc, char* argv[])
 	load_environment();
 	check_sig(SIGTERM, _destructor)
 	check_sig(SIGINT, _destructor)
+	check_sig(SIGPIPE, _destructor)
 	check( sigaction(SIGCHLD, &sig, NULL) )
 	open_socket();
 	#ifdef SERVER_BUILD
