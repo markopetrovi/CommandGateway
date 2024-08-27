@@ -52,12 +52,12 @@ out:
 }
 
 void dummy() { return; }
-void open_socket(char *sockPath)
+void open_socket()
 {
 	struct sockaddr_un sock = { 0 };
 	
 	lprintf("[DEBUG]: Opening listening socket...\n");
-	fill_sockaddr(sockPath, &sock);
+	fill_sockaddr(&sock);
 	check( sockfd=socket(AF_UNIX, SOCK_SEQPACKET | SOCK_CLOEXEC, 0) )
 	if (does_file_exist(sockPath)) {
 		check_sig(SIGALRM, dummy)

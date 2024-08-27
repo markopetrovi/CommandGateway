@@ -53,7 +53,7 @@ struct program_options {
 /* ************* main.c ************* */
 extern int sockfd;
 
-void open_socket(char *sockPath);
+void open_socket();	/* Calls open_socket() */
 /* ************* request_dispatcher.c ************* */
 #define PRIV_NONE		0
 #define PRIV_TESTDEV	1
@@ -68,17 +68,17 @@ void dispatch_request();
 /* ************* environment.c ************* */
 extern char version[];
 extern __server_data char *log_path;
-extern char *rootPath, *group_testdev, *group_dev, *group_admin, *group_superuser;
+extern char *sockPath, *rootPath, *group_testdev, *group_dev, *group_admin, *group_superuser;
 extern int log_level;
 extern bool shouldDeleteSocket;
 extern struct program_options options;
 
 bool does_file_exist(char *path);
 void clear_environment();
-void init_program(int argc, char* argv[]);	/* Calls open_socket() */
+void init_program(int argc, char* argv[]);
 void destructor(int signum);
 void set_timeout(int fd);
-void fill_sockaddr(char *sockPath, struct sockaddr_un *sock);
+void fill_sockaddr(struct sockaddr_un *sock);
 /* ************* log.c ************* */
 #define LOG_NONE	0
 #define LOG_ERROR	1
