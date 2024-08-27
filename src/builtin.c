@@ -10,7 +10,7 @@ void print_from_remote(bool isError, const char *string)
 {
 	if (privs < PRIV_DEV) {
 		lprintf("[WARNING]: Unprivileged peer %s trying to write to log\n", peerName);
-		send_socket(sockfd, "PRINTERR", "Permission denied");
+		send_socket(sockfd, "PRINTERR", "Permission denied\n");
 	}
 	if (isError)
 		lprintf("[ERROR] [REMOTE]: %s", string);
