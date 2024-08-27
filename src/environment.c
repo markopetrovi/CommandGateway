@@ -40,7 +40,7 @@ bool does_file_exist(char *path)
 void clear_environment()
 {
 	unsetenv("SOCK_PATH");
-	unsetenv("CONTAINER_SUBVOL_ID");
+	unsetenv("ROOT_PATH");
 	unsetenv("LOG_LEVEL");
 	unsetenv("TIMEOUT");
 }
