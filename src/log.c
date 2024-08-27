@@ -188,7 +188,7 @@ void __server log_stdio()
 
 	if (likely(nullfd > STDERR_FILENO))
 		check( close(nullfd) )
-	if (fd > STDERR_FILENO && fd != nullfd)
+	if (likely(fd > STDERR_FILENO) && fd != nullfd)
 		check( close(fd) )
 	redirected_stdio = true;
 }
