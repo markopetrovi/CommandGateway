@@ -201,8 +201,10 @@ void init_program(int argc, char* argv[])
 	load_environment();
 	check_sig(SIGTERM, _destructor)
 	check_sig(SIGINT, _destructor)
-	check_sig(SIGPIPE, _destructor)
 	check( sigaction(SIGCHLD, &sig, NULL) )
+	sig.sa_handler = SIG_IGN;
+	sig.sa_flags = 0;
+	check( sigaction(SIGPIPE, &sig, NULL) )
 	open_socket();
 	options = parse_program_options(argc, argv);
 	if (!options.is_foreground) {

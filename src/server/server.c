@@ -98,7 +98,6 @@ int main(int argc, char *argv[])
 	check_sig(SIGUSR1, wait_signum1)
 	check( sigaddset(&handled, SIGTERM) )
 	check( sigaddset(&handled, SIGINT) )
-	check( sigaddset(&handled, SIGPIPE) )
 	while (1) {
 		check( fd = accept4(sockfd, NULL, NULL, SOCK_CLOEXEC) )
 		check( sigprocmask(SIG_BLOCK, &handled, NULL) )	/* Prevent race condition in which the child calls destructor() too early */
