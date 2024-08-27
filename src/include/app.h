@@ -53,7 +53,7 @@ struct program_options {
 /* ************* main.c ************* */
 extern int sockfd;
 
-void open_socket();	/* Calls open_socket() */
+void open_socket();
 /* ************* request_dispatcher.c ************* */
 #define PRIV_NONE		0
 #define PRIV_TESTDEV	1
@@ -75,7 +75,7 @@ extern struct program_options options;
 
 bool does_file_exist(char *path);
 void clear_environment();
-void init_program(int argc, char* argv[]);
+void init_program(int argc, char* argv[]);	/* Calls open_socket() */
 void destructor(int signum);
 void set_timeout(int fd);
 void fill_sockaddr(struct sockaddr_un *sock);
