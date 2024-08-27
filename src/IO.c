@@ -38,6 +38,19 @@ static void add_null_termination(ssize_t ret, struct msghdr *msg)
 	string[ret] = '\0';
 }
 
+static bool check_eor(ssize_t ret, struct msghdr *msg)
+{
+	char *string = msg->msg_iov->iov_base;
+
+	if (msg->msg_flags & MSG_EOR)
+		return true;
+	if (ret < 3)
+		return false;
+	if (string[0] == 'E' && string[1] == 'O' && string[2] == 'R')
+		return true;
+	return false;
+}
+
 int sread(int fd, struct iovec *buf, int count)
 {
 	struct msghdr msg = { 0 };
@@ -53,7 +66,7 @@ int sread(int fd, struct iovec *buf, int count)
 		ret = recvmsg(fd, &msg, 0);
 		check_value(ret, &msg);
 		add_null_termination(ret, &msg);
-		if (msg.msg_flags & MSG_EOR) {
+		if (check_eor(ret, &msg)) {
 			lprintf("[DEBUG]: Received MSG_EOR earlier than expected. Expected %i packets, got %i\n", count, i+1);
 			return i+1;
 		}
@@ -62,7 +75,7 @@ int sread(int fd, struct iovec *buf, int count)
 	ret = recvmsg(fd, &msg, 0);
 	check_value(ret, &msg);
 	add_null_termination(ret, &msg);
-	if(!(msg.msg_flags & MSG_EOR))
+	if(!check_eor(ret, &msg))
 		lprintf("[DEBUG]: Didn't receive MSG_EOR at the end of transmission. There could be more packets waiting in the queue.\n");
 	return count;
 }
