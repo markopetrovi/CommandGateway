@@ -1,6 +1,7 @@
 #include <app.h>
 
 int sockfd = -1;
+static bool is_sigusr1 = false;
 
 static void get_server_info()
 {
@@ -82,12 +83,18 @@ void open_socket()
 	lprintf("[DEBUG]: Started listening on socket %s\n", sockPath);
 }
 
+static void wait_signum1(int signum)
+{
+	if (signum == SIGUSR1)
+		is_sigusr1 = true;
+}
 int main(int argc, char *argv[])
 {
 	int fd, pid;
 	sigset_t handled;
 	
 	init_program(argc, argv);
+	check_sig(SIGUSR1, wait_signum1)
 	check( sigaddset(&handled, SIGTERM) )
 	check( sigaddset(&handled, SIGINT) )
 	check( sigaddset(&handled, SIGPIPE) )
@@ -96,17 +103,19 @@ int main(int argc, char *argv[])
 		check( sigprocmask(SIG_BLOCK, &handled, NULL) )	/* Prevent race condition in which the child calls destructor() too early */
 		check( pid = fork() )
 		if (pid == 0) {
+			check( close(sockfd) )
 			sockfd = fd;
 			shouldDeleteSocket = false;
 			check( sigprocmask(SIG_UNBLOCK, &handled, NULL) )
-			check( close(sockfd) )
 			log_stdio();	/* Reopen log file so that flock() works on separate fds */
-			check( kill(getppid(), SIGCONT) )
+			check( kill(getppid(), SIGUSR1) )
 			set_timeout(sockfd);
 			dispatch_request();
 			destructor(0);
 		}
-		raise(SIGSTOP);
+		is_sigusr1 = false;
+		while(!is_sigusr1)
+			pause();
 		check( sigprocmask(SIG_UNBLOCK, &handled, NULL) )
 	}
 
