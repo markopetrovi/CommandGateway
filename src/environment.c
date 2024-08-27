@@ -3,7 +3,7 @@
 static bool manualDestructorCall = false;
 static time_t timeout_seconds = 5;
 
-char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
+char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic\n";
 struct program_options options;
 bool shouldDeleteSocket = false;
 int log_level = LOG_WARNING;
