@@ -8,7 +8,7 @@ BIN_DIR = bin
 
 # Compiler and flags
 CC = gcc
-CFLAGS = -I$(INCLUDE_DIR) -Wall -Wno-parentheses -Werror
+CFLAGS = -I$(INCLUDE_DIR) -Wall -Wno-parentheses -Werror -O3
 LDFLAGS = -Wl,--gc-sections
 
 # Server target
