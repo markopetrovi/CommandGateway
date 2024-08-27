@@ -100,7 +100,11 @@ void swrite(int fd, struct iovec *buf, int count);
 void send_socket(int fd, char *anc, char *data);
 void read_socket(int fd, struct iovec *io);
 /* ************* builtin.c ************* */
+#define MESSAGE_STDIO	0
+#define MESSAGE_REMOTE	1
+#define MESSAGE_ERROR	2
+
 void print_version();
-void print_from_remote(bool isError, const char *string);
+void print_from_remote(short type, const char *string);
 
 #endif /* APP_H */

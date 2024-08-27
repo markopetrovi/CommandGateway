@@ -112,11 +112,15 @@ static short parse_commands(struct iovec *io)
 		return 0;
 	}
 	if (!strcmp(io[0].iov_base, "PRINT")) {
-		print_from_remote(false, io[1].iov_base);
+		print_from_remote(MESSAGE_REMOTE, io[1].iov_base);
 		return 0;
 	}
 	if (!strcmp(io[0].iov_base, "PRINTERR")) {
-		print_from_remote(true, io[1].iov_base);
+		print_from_remote(MESSAGE_ERROR, io[1].iov_base);
+		return 0;
+	}
+	if (!strcmp(io[0].iov_base, "STDIO")) {
+		print_from_remote(MESSAGE_STDIO, io[1].iov_base);
 		return 0;
 	}
 	return -1;
