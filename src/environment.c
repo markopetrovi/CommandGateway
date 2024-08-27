@@ -91,24 +91,6 @@ static void load_environment()
 {
 	char *log_level_str, *relative_sockPath, *timeout_str;
 
-	#ifdef SERVER_BUILD
-	load_server_env();
-	#endif
-	load_groups();
-	relative_sockPath = getenv("SOCK_PATH");
-	if (!relative_sockPath)
-		relative_sockPath = "/tmp/cgsocket";
-	lprintf("[INFO]: Using %s for SOCK_PATH\n", relative_sockPath);
-	check( asprintf(&sockPath, "%s/%s", rootPath, relative_sockPath) )
-
-	timeout_str = getenv("TIMEOUT");
-	if (timeout_str) {
-		timeout_seconds = atoi(timeout_str);
-		if (!timeout_seconds)
-			lprintf("[WARNING]: Socket timeout disabled. Operations can block indefinitely.\n");
-		lprintf("[INFO]: Socket TIMEOUT set to %i\n", timeout_seconds);
-	}
-
 	log_level_str = getenv("LOG_LEVEL");
 	if (log_level_str) {
 		switch (log_level_str[0]) {
@@ -136,6 +118,24 @@ static void load_environment()
 				log_level = LOG_WARNING;
 				lprintf("[WARNING]: Unknown LOG_LEVEL value. Using the default value: LOG_WARNING.\n");
 		}
+	}
+
+	#ifdef SERVER_BUILD
+	load_server_env();
+	#endif
+	load_groups();
+	relative_sockPath = getenv("SOCK_PATH");
+	if (!relative_sockPath)
+		relative_sockPath = "/tmp/cgsocket";
+	lprintf("[INFO]: Using %s for SOCK_PATH\n", relative_sockPath);
+	check( asprintf(&sockPath, "%s/%s", rootPath, relative_sockPath) )
+
+	timeout_str = getenv("TIMEOUT");
+	if (timeout_str) {
+		timeout_seconds = atoi(timeout_str);
+		if (!timeout_seconds)
+			lprintf("[WARNING]: Socket timeout disabled. Operations can block indefinitely.\n");
+		lprintf("[INFO]: Socket TIMEOUT set to %i\n", timeout_seconds);
 	}
 }
 
