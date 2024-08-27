@@ -154,10 +154,10 @@ void _destructor(int signum)
 		lprintf("[WARNING]: Received signal %s - exiting...\n", signal);
 		exit(0);
 	}
-	if (signum != 0) {
+	/* if (signum != 0) {
 		lprintf("[ERROR]: A fatal error has occured and the program has to exit.\n");
-		/* lprintf("[ERROR]: %s\n", strerror(signum)); */
-	}
+		lprintf("[ERROR]: %s\n", strerror(signum));
+	} */
 	exit(-signum);	// destructor called manually
 }
 

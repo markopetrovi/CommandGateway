@@ -15,5 +15,13 @@ void open_socket()
 
 int main(int argc, char *argv[])
 {
+    if (argc <= 1) {
+        fprintf(stderr, "[ERROR]: Missing command parameter.\n");
+        destructor(EINVAL);
+    }
     init_program(argc, argv);
+
+    send_socket(sockfd, argv[1], "");
+    dispatch_request();
+    send_socket(sockfd, "END", "");
 }
