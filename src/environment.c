@@ -167,7 +167,7 @@ void destructor(int error)
 	_destructor(error);
 }
 
-static __server struct program_options parse_program_options(int argc, char* argv[])
+static struct program_options parse_program_options(int argc, char* argv[])
 {
 	struct program_options options = { 0 };
 	

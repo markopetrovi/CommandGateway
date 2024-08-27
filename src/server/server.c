@@ -9,7 +9,7 @@ static void get_server_info()
 	socklen_t s = sizeof(struct ucred);
 	int fd;
 	char *commPath;
-	char *buf = malloc(BUF_SIZE+1);
+	char *buf = malloc(BUF_SIZE);
 	ssize_t ret;
 
 	if (unlikely(!buf)) {
@@ -34,7 +34,7 @@ static void get_server_info()
 			lprintf("[INFO]: Socket held open by process UNKNOWN pid: %i\n", cred.pid);
 			goto out;
 		}
-		buf[ret] = '\0';
+		buf[ret-1] = '\0';	/* read() returns a string terminated witn \n */
 		
 		lprintf("[INFO]: Socket held open by process %s pid: %i\n", buf, cred.pid);
 		
