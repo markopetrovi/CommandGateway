@@ -2,12 +2,13 @@
 
 static bool manualDestructorCall = false;
 static time_t timeout_seconds = 5;
+static char *sockPath = NULL;
 
 char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic\n";
 struct program_options options;
 bool shouldDeleteSocket = false;
 int log_level = LOG_WARNING;
-char *sockPath = NULL, *rootPath = "/";
+char *rootPath = "/";
 char __server_data *log_path = "/var/log/cg.log";
 char *group_testdev = "jmatestdev", *group_dev = "jmadev";
 char *group_admin = "jmaadmin", *group_superuser = "jmaroot";
@@ -203,7 +204,8 @@ void init_program(int argc, char* argv[])
 	check_sig(SIGINT, _destructor)
 	check_sig(SIGPIPE, _destructor)
 	check( sigaction(SIGCHLD, &sig, NULL) )
-	open_socket();
+	open_socket(sockPath);
+	free(sockPath);
 	options = parse_program_options(argc, argv);
 	if (!options.is_foreground) {
 		daemonize();
@@ -221,7 +223,7 @@ void set_timeout(int fd)
 	check( setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(struct timeval)) )
 }
 
-void fill_sockaddr(struct sockaddr_un *sock)
+void fill_sockaddr(char *sockPath, struct sockaddr_un *sock)
 {
 	sock->sun_family = AF_UNIX;
 	if (strlen(sockPath) >= sizeof(sock->sun_path)) {
