@@ -100,8 +100,7 @@ static void get_peer_credentails()
 			privs = PRIV_SUPERUSER;
 	}
 	fclose(fp);
-	errno = ENOENT;
-	report_error_and_die("Cannot get peer group privileges.\n");
+	privs = PRIV_NONE;
 }
 
 static short parse_commands(struct iovec *io)
