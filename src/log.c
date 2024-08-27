@@ -156,6 +156,8 @@ void __server log_stdio()
 {
 	int fd, nullfd;
 
+	if (options.is_foreground)
+		return;
 	fd = open(log_path, O_CREAT | O_RDWR | O_APPEND | O_CLOEXEC, 0600);
 	check( nullfd = open("/dev/null", O_RDWR | O_CLOEXEC) )
 	if (fd < 0) {

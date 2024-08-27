@@ -1,16 +1,16 @@
 #include <app.h>
 
-char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
-bool shouldDeleteSocket = false;
 static bool manualDestructorCall = false;
 static time_t timeout_seconds = 5;
 
+char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
+struct program_options options;
+bool shouldDeleteSocket = false;
 int log_level = LOG_WARNING;
 char *sockPath = NULL, *rootPath = "/";
 char __server_data *log_path = "/var/log/cg.log";
 char *group_testdev = "jmatestdev", *group_dev = "jmadev";
 char *group_admin = "jmaadmin", *group_superuser = "jmaroot";
-
 
 void __server daemonize()
 {
@@ -167,11 +167,11 @@ void destructor(int error)
 	_destructor(error);
 }
 
-#ifdef SERVER_BUILD
-static __server struct server_options parse_server_options(int argc, char* argv[])
+static __server struct program_options parse_program_options(int argc, char* argv[])
 {
-	struct server_options options = { 0 };
+	struct program_options options = { 0 };
 	
+	#ifdef SERVER_BUILD
 	for (int i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--foreground")) {
 			options.is_foreground = true;
@@ -179,10 +179,12 @@ static __server struct server_options parse_server_options(int argc, char* argv[
 		}
 		lprintf("[WARNING]: Unknown option %s\n", argv[i]);
 	}
+	#elif CLIENT_BUILD
+	options.is_foreground = true;
+	#endif
 
 	return options;
 }
-#endif
 
 void init_program(int argc, char* argv[])
 {
@@ -202,14 +204,11 @@ void init_program(int argc, char* argv[])
 	check_sig(SIGPIPE, _destructor)
 	check( sigaction(SIGCHLD, &sig, NULL) )
 	open_socket();
-	#ifdef SERVER_BUILD
-	struct server_options options;
-	options = parse_server_options(argc, argv);
+	options = parse_program_options(argc, argv);
 	if (!options.is_foreground) {
 		daemonize();
 		log_stdio();
 	}
-	#endif
 }
 
 void set_timeout(int fd)

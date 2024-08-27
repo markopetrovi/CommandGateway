@@ -9,13 +9,6 @@
 #define __server_data __attribute__((section(".server.data")))
 #define __client_data __attribute__((section(".discard.client.data"), unused))
 
-struct server_options {
-    bool is_foreground;
-};
-
-/* ************* log.c ************* */
-void log_stdio();
-
 /* ************* environment.c ************* */
 void daemonize();
 

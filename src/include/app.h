@@ -46,6 +46,10 @@ typedef enum {
 	SPECIAL
 } Action;
 
+struct program_options {
+    bool is_foreground;
+};
+
 /* ************* main.c ************* */
 extern int sockfd;
 
@@ -67,6 +71,7 @@ extern __server_data char *log_path;
 extern char *sockPath, *rootPath, *group_testdev, *group_dev, *group_admin, *group_superuser;
 extern int log_level;
 extern bool shouldDeleteSocket;
+extern struct program_options options;
 
 bool does_file_exist(char *path);
 void clear_environment();
@@ -81,6 +86,7 @@ void fill_sockaddr(struct sockaddr_un *sock);
 #define LOG_INFO	3
 #define LOG_DEBUG	4
 
+void log_stdio();	/* log_stdio doesn't have any effect on Client*/
 /* Following logging functions preserve errno */
 /* THREAD SAFE */
 int lfprintf(FILE *restrict stream, const char *restrict format, ...);
