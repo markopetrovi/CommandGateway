@@ -14,7 +14,7 @@ static void get_server_info()
 
 	if (unlikely(!buf)) {
 		dlperror("malloc");
-		destructor(-errno);
+		destructor(errno);
 	}
 
 	if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &s) < 0) {
@@ -74,7 +74,7 @@ void open_socket()
 			set_timeout(sockfd);
 			lprintf("[ERROR]: Socket already in use. Aborting...\n");
 			get_server_info();
-			destructor(-EADDRINUSE);
+			destructor(EADDRINUSE);
 		}
 	}
 

@@ -7,7 +7,7 @@ static void check_value(ssize_t ret, struct msghdr *msg)
 			lprintf("[ERROR]: Socket taking too long to respond.\n");
 		dlperror("recvmsg/sendmsg");
 		lprintf("[ERROR]: Failed to transmit data.\n");
-		destructor(-errno);
+		destructor(errno);
 	}
 	if (ret < msg->msg_iov->iov_len)
 		lprintf("[DEBUG]: Transmitted less bytes than expected. Expected: %lu Got: %lu\n", msg->msg_iov->iov_len, ret);
@@ -23,7 +23,7 @@ static void add_null_termination(ssize_t ret, struct msghdr *msg)
 		char *str = malloc(ret+1);
 		if (unlikely(!str)) {
 			dlperror("malloc");
-			destructor(-errno);
+			destructor(errno);
 		}
 		memcpy(str, string, ret);
 		str[ret] = '\0';
@@ -32,7 +32,7 @@ static void add_null_termination(ssize_t ret, struct msghdr *msg)
 		/* Danger zone */
 		if (string[ret] != '\0') {
 			lprintf("[ERROR]: Buffer too small for NULL byte and got non-null-terminated string: %s\n", str);
-			destructor(-ENOMEM);
+			destructor(ENOMEM);
 		}
 		free(str);
 		return;

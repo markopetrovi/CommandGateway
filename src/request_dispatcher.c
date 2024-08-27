@@ -13,7 +13,7 @@ static void report_error_and_die(char *error)
 	send_socket(sockfd, "PRINTERR", "Connection closed.\n");
 	lprintf("[ERROR]: %s", error);
 	lprintf("[ERROR]: Connection with %s closed.\n", peerName);
-	destructor(-olderrno);
+	destructor(olderrno);
 }
 
 static uid_t get_peer_uid()

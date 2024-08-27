@@ -30,13 +30,13 @@
 #define check(...)									\
 	if (unlikely((__VA_ARGS__) < 0)) {				\
 		dlperror(#__VA_ARGS__);						\
-		destructor(-errno);							\
+		destructor(errno);							\
 	}
 
 #define check_sig(sig, handler)									\
 	if (unlikely(signal(sig, handler) == SIG_ERR)) {			\
 		dlperror("signal");										\
-		destructor(-errno);										\
+		destructor(errno);										\
 	}
 
 typedef enum {
