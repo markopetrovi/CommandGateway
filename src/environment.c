@@ -37,12 +37,16 @@ bool does_file_exist(char *path)
 	return true;
 }
 
-void clear_environment()
+static void clear_environment()
 {
-	unsetenv("SOCK_PATH");
-	unsetenv("ROOT_PATH");
-	unsetenv("LOG_LEVEL");
-	unsetenv("TIMEOUT");
+	check( unsetenv("SOCK_PATH") )
+	check( unsetenv("ROOT_PATH") )
+	check( unsetenv("LOG_LEVEL") )
+	check( unsetenv("TIMEOUT") )
+	check( unsetenv("GROUP_TESTDEV") )
+	check( unsetenv("GROUP_DEV") )
+	check( unsetenv("GROUP_ADMIN") )
+	check( unsetenv("GROUP_SUPERUSER") )
 }
 
 static void load_groups()
@@ -199,6 +203,7 @@ void init_program(int argc, char* argv[])
 	check( prctl(PR_SET_NAME, "jma_Iclient") )
 	#endif
 	load_environment();
+	clear_environment();
 	check_sig(SIGTERM, _destructor)
 	check_sig(SIGINT, _destructor)
 	check( sigaction(SIGCHLD, &sig, NULL) )

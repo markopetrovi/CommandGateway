@@ -74,7 +74,6 @@ extern bool shouldDeleteSocket;
 extern struct program_options options;
 
 bool does_file_exist(char *path);
-void clear_environment();
 void init_program(int argc, char* argv[]);	/* Calls open_socket() */
 void destructor(int signum);
 void set_timeout(int fd);
