@@ -100,7 +100,6 @@ static void get_peer_credentails()
 			privs = PRIV_SUPERUSER;
 	}
 	fclose(fp);
-	privs = PRIV_NONE;
 }
 
 static short parse_commands(struct iovec *io)
