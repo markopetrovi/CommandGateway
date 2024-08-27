@@ -31,9 +31,14 @@ static Action check_lprintf_format(const char *restrict format)
 {
 	Action a;
 
-	if (format[0] != '[' || format[1] == '\0')
+	/* 
+	 * DEFAULT - to stdout_fileno
+	 * SPECIAL - to stderr_fileno
+	*/
+
+	if (format[0] != '[')
 		a = FALLBACK;
-	switch(format[1]) {
+	else switch(format[1]) {
 		case 'D':
 			a = SPECIAL;
 			if (log_level < LOG_DEBUG)
@@ -53,6 +58,9 @@ static Action check_lprintf_format(const char *restrict format)
 			a = SPECIAL;
 			if (log_level < LOG_ERROR)
 				a = ABORT;
+			break;
+		case 'R':
+			a = DEFAULT;
 			break;
 		default:
 			a = FALLBACK;
