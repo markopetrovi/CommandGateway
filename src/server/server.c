@@ -10,13 +10,13 @@ static void get_server_info()
 	int fd;
 	char *commPath;
 	char *buf = malloc(BUF_SIZE+1);
+	ssize_t ret;
 
 	if (unlikely(!buf)) {
 		dlperror("malloc");
-		destructor(errno);
+		destructor(-errno);
 	}
 
-	buf[BUF_SIZE] = '\0';
 	if (getsockopt(sockfd, SOL_SOCKET, SO_PEERCRED, &cred, &s) < 0) {
 		dlperror("getsockopt");
 		lprintf("[WARNING]: Unknown process holds the socket open.\n");
@@ -29,11 +29,12 @@ static void get_server_info()
 			lprintf("[INFO]: Socket held open by process UNKNOWN pid: %i\n", cred.pid);
 			goto out;
 		}
-		if (read(fd, buf, BUF_SIZE) <= 0) {
+		if ((ret = read(fd, buf, BUF_SIZE)) <= 0) {
 			dlperror("read");
 			lprintf("[INFO]: Socket held open by process UNKNOWN pid: %i\n", cred.pid);
 			goto out;
 		}
+		buf[ret] = '\0';
 		
 		lprintf("[INFO]: Socket held open by process %s pid: %i\n", buf, cred.pid);
 		
@@ -73,7 +74,7 @@ void open_socket()
 			set_timeout(sockfd);
 			lprintf("[ERROR]: Socket already in use. Aborting...\n");
 			get_server_info();
-			destructor(EADDRINUSE);
+			destructor(-EADDRINUSE);
 		}
 	}
 

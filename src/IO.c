@@ -7,10 +7,37 @@ static void check_value(ssize_t ret, struct msghdr *msg)
 			lprintf("[ERROR]: Socket taking too long to respond.\n");
 		dlperror("recvmsg/sendmsg");
 		lprintf("[ERROR]: Failed to transmit data.\n");
-		destructor(errno);
+		destructor(-errno);
 	}
 	if (ret < msg->msg_iov->iov_len)
 		lprintf("[DEBUG]: Transmitted less bytes than expected. Expected: %lu Got: %lu\n", msg->msg_iov->iov_len, ret);
+}
+
+static void add_null_termination(ssize_t ret, struct msghdr *msg)
+{
+	char *string = msg->msg_iov->iov_base;
+
+	if (ret == 0 || !string[ret-1])
+		return;
+	if (ret == msg->msg_iov->iov_len) {
+		char *str = malloc(ret+1);
+		if (unlikely(!str)) {
+			dlperror("malloc");
+			destructor(-errno);
+		}
+		memcpy(str, string, ret);
+		str[ret] = '\0';
+		lprintf("[DEBUG]: Got non-null-terminated string: %s\n", str);
+
+		/* Danger zone */
+		if (string[ret] != '\0') {
+			lprintf("[ERROR]: Buffer too small for NULL byte and got non-null-terminated string: %s\n", str);
+			destructor(-ENOMEM);
+		}
+		free(str);
+		return;
+	}
+	string[ret] = '\0';
 }
 
 int sread(int fd, struct iovec *buf, int count)
@@ -27,6 +54,7 @@ int sread(int fd, struct iovec *buf, int count)
 		msg.msg_iov = &buf[i];
 		ret = recvmsg(fd, &msg, 0);
 		check_value(ret, &msg);
+		add_null_termination(ret, &msg);
 		if (msg.msg_flags & MSG_EOR) {
 			lprintf("[DEBUG]: Received MSG_EOR earlier than expected. Expected %i packets, got %i\n", count, i+1);
 			return i+1;
@@ -35,6 +63,7 @@ int sread(int fd, struct iovec *buf, int count)
 	msg.msg_iov = &buf[count-1];
 	ret = recvmsg(fd, &msg, 0);
 	check_value(ret, &msg);
+	add_null_termination(ret, &msg);
 	if(!(msg.msg_flags & MSG_EOR))
 		lprintf("[DEBUG]: Didn't receive MSG_EOR at the end of transmission. There could be more packets waiting in the queue.\n");
 	return count;
@@ -63,6 +92,7 @@ void swrite(int fd, struct iovec *buf, int count)
 void send_socket(int fd, char *anc, char *data)
 {
 	struct iovec io[2];
+
 	io[0].iov_base = anc;
 	io[0].iov_len = strlen(anc);
 	io[1].iov_base = data;
@@ -72,10 +102,9 @@ void send_socket(int fd, char *anc, char *data)
 
 void read_socket(int fd, struct iovec *io)
 {
-	static char bufanc[BUF_SIZE+1];
-	static char bufdata[BUF_SIZE+1];
+	static char bufanc[BUF_SIZE+1] = { 0 };
+	static char bufdata[BUF_SIZE+1] = { 0 };
 
-	bufanc[0] = bufanc[BUF_SIZE] = bufdata[0] = bufdata[BUF_SIZE] = '\0';
 	io[0].iov_base = bufanc;
 	io[0].iov_len = BUF_SIZE;
 	io[1].iov_base = bufdata;

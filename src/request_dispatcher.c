@@ -13,7 +13,7 @@ static void report_error_and_die(char *error)
 	send_socket(sockfd, "PRINTERR", "Connection closed.\n");
 	lprintf("[ERROR]: %s", error);
 	lprintf("[ERROR]: Connection with %s closed.\n", peerName);
-	destructor(olderrno);
+	destructor(-olderrno);
 }
 
 static uid_t get_peer_uid()
@@ -44,7 +44,7 @@ static void get_peer_name(uid_t uid)
 	while (p=fgetpwent(fp)) {
 		if (p->pw_uid == uid) {
 			peerName = malloc(strlen(p->pw_name) + 1);
-			if (!peerName) {
+			if (unlikely(!peerName)) {
 				dlperror("malloc");
 				report_error_and_die("Dispatcher failed.\n");
 			}

@@ -126,13 +126,13 @@ int lvfprintf(FILE *restrict stream, const char *restrict format, va_list ap, Ac
 		snprintf(line_ptr, LINE_BUF_SIZE-(line_ptr-line_buffer), "%s", format);
 
 	if (redirected_stdio && flock(fileno(stream), LOCK_EX) < 0)
-		destructor(errno);	/* Logging isn't reliable without locking. Just exit. */
+		destructor(-errno);	/* Logging isn't reliable without locking. Just exit. */
 
 	/* Override the stream from Action (Same Action for DEFAULT and SPECIAL) */
 	ret = vfprintf(stream, line_buffer, ap);
 
 	if (redirected_stdio && flock(fileno(stream), LOCK_UN) < 0)
-		destructor(errno);	/* We can't keep the file deadlocked. Exit. */
+		destructor(-errno);	/* We can't keep the file deadlocked. Exit. */
 	errno = olderrno;
 	return ret;
 }
@@ -150,13 +150,13 @@ void lperror(const char *s)
 
 	INIT_LINE_PTR(line_ptr)
 	if (redirected_stdio && flock(STDERR_FILENO, LOCK_EX) < 0)
-		destructor(errno);	/* Logging isn't reliable without locking. Just exit. */
+		destructor(-errno);	/* Logging isn't reliable without locking. Just exit. */
 	fprintf(stderr, "%s", line_buffer);
 	if (ret == FALLBACK)
 		fprintf(stderr, "[DEBUG]: ");
 	perror(s);
 	if (redirected_stdio && flock(STDERR_FILENO, LOCK_UN) < 0)
-		destructor(errno);	/* We can't keep the file deadlocked. Exit. */
+		destructor(-errno);	/* We can't keep the file deadlocked. Exit. */
 	errno = olderrno;
 }
 

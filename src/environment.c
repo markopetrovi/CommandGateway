@@ -78,7 +78,7 @@ static void __server load_server_env()
 	lprintf("[INFO]: Using %s for ROOT_PATH\n", rootPath);
 	if (!does_file_exist(rootPath)) {
 		lprintf("[ERROR]: Supplied ROOT_PATH folder \"%s\" does not exist\n", rootPath);
-		destructor(ENOENT);
+		destructor(-ENOENT);
 	}
 
 	isPresent = getenv("LOG_PATH");
@@ -226,7 +226,7 @@ void fill_sockaddr(struct sockaddr_un *sock)
 	sock->sun_family = AF_UNIX;
 	if (strlen(sockPath) >= sizeof(sock->sun_path)) {
 		lprintf("[ERROR]: Cannot create socket. Path %s too long (max length " TOSTRING(sizeof(sock->sun_path)-1) ")\n", sockPath);
-		destructor(ENAMETOOLONG);
+		destructor(-ENAMETOOLONG);
 	}
 	strcpy(sock->sun_path, sockPath);
 }
