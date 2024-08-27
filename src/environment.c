@@ -1,6 +1,6 @@
 #include <app.h>
 
-const char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
+char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic";
 bool shouldDeleteSocket = false;
 static bool manualDestructorCall = false;
 static time_t timeout_seconds = 5;

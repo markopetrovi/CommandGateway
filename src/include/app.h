@@ -62,7 +62,7 @@ extern char *peerName;
 
 void dispatch_request();
 /* ************* environment.c ************* */
-extern const char version[];
+extern char version[];
 extern __server_data char *log_path;
 extern char *sockPath, *rootPath, *group_testdev, *group_dev, *group_admin, *group_superuser;
 extern int log_level;
@@ -90,8 +90,8 @@ void lperror(const char *s);
 #define dlperror(s)	lperror(__FILE__ ":" TOSTRING(__LINE__) ":" s)
 /* ************* IO.c ************* */
 int sread(int fd, struct iovec *buf, int count);
-void swrite(int fd, const struct iovec *buf, int count);
-void send_socket(int fd, const char *restrict anc, const char *restrict data);
+void swrite(int fd, struct iovec *buf, int count);
+void send_socket(int fd, char *anc, char *data);
 void read_socket(int fd, struct iovec *io);
 /* ************* builtin.c ************* */
 void print_version();

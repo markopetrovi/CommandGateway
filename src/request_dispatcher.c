@@ -5,7 +5,7 @@
 char *peerName = "UNIDENTIFIED";
 int privs = PRIV_NONE;
 
-static void report_error_and_die(const char *restrict error)
+static void report_error_and_die(char *error)
 {
 	int olderrno = errno;
 

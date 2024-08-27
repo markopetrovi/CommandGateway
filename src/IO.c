@@ -20,7 +20,7 @@ int sread(int fd, struct iovec *buf, int count)
 	
 	if (count < 1) {
 		lprintf("[DEBUG]: sread called with %i-length buffer\n", count);
-		return;
+		return 0;
 	}
 	msg.msg_iovlen = 1;
 	for (int i = 0; i < count-1; i++) {
@@ -40,7 +40,7 @@ int sread(int fd, struct iovec *buf, int count)
 	return count;
 }
 
-void swrite(int fd, const struct iovec *buf, int count)
+void swrite(int fd, struct iovec *buf, int count)
 {
 	struct msghdr msg = { 0 };
 	ssize_t ret;
@@ -60,14 +60,14 @@ void swrite(int fd, const struct iovec *buf, int count)
 	check_value(ret, &msg);
 }
 
-void send_socket(int fd, const char *restrict anc, const char *restrict data)
+void send_socket(int fd, char *anc, char *data)
 {
 	struct iovec io[2];
 	io[0].iov_base = anc;
 	io[0].iov_len = strlen(anc);
 	io[1].iov_base = data;
 	io[1].iov_len = strlen(data);
-	swrite(fd, &io, 2);
+	swrite(fd, io, 2);
 }
 
 void read_socket(int fd, struct iovec *io)
