@@ -9,8 +9,6 @@ static void check_value(ssize_t ret, struct msghdr *msg)
 		lprintf("[ERROR]: Failed to transmit data.\n");
 		destructor(errno);
 	}
-	if (ret < msg->msg_iov->iov_len)
-		lprintf("[DEBUG]: Transmitted less bytes than expected. Expected: %lu Got: %lu\n", msg->msg_iov->iov_len, ret);
 }
 
 static void add_null_termination(ssize_t ret, struct msghdr *msg)
@@ -83,10 +81,14 @@ void swrite(int fd, struct iovec *buf, int count)
 		msg.msg_iov = &buf[i];
 		ret = sendmsg(fd, &msg, 0);
 		check_value(ret, &msg);
+		if (ret < msg.msg_iov->iov_len)
+			lprintf("[DEBUG]: Transmitted less bytes than expected. Expected: %lu Got: %lu\n", msg.msg_iov->iov_len, ret);
 	}
 	msg.msg_iov = &buf[count-1];
 	ret = sendmsg(fd, &msg, MSG_EOR);
 	check_value(ret, &msg);
+	if (ret < msg.msg_iov->iov_len)
+		lprintf("[DEBUG]: Transmitted less bytes than expected. Expected: %lu Got: %lu\n", msg.msg_iov->iov_len, ret);
 }
 
 void send_socket(int fd, char *anc, char *data)
