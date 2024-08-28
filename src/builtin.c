@@ -172,11 +172,12 @@ short try_external(char *command, char *string)
 			check( close(pipefd[1]) )
 		char *argv[] = {command, string, NULL};
 		execve(execPath, argv, environ);
+		int olderrno = errno;
 		if (!options.is_foreground)
 			log_stdio();	/* Reopen log file so that flock() works on separate fds */
 		send_socket(sockfd, "PRINTERR", "Failed to execute command");
 		dlperror("execve");
-		exit(errno);
+		exit(olderrno);
 	}
 	free(execPath);
 	check( close(pipefd[1]) )
