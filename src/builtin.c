@@ -20,9 +20,9 @@ void print_from_remote(short type, const char *string)
 		return;
 	}
 	if (type == MESSAGE_ERROR)
-		lprintf("[ERROR] [REMOTE]: %s", string);
+		lprintf("[ERROR] [REMOTE %s]: %s", peerName, string);
 	else if (type == MESSAGE_REMOTE)
-		lprintf("[REMOTE]: %s", string);
+		lprintf("[REMOTE %s]: %s", peerName, string);
 	else
 		lprintf("%s", string);
 	send_socket(sockfd, "END", "");
