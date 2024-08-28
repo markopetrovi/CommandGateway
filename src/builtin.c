@@ -133,6 +133,11 @@ static __client char *find_in_path(char *command)
 	return (pathDir) ? execPath : NULL;
 }
 
+void report_failure(int signum)
+{
+	send_socket(sockfd, "PRINTERR", "Failed to execute command");
+}
+
 short try_external(char *command, char *string)
 {
 	static char buf[BUF_SIZE+1];
@@ -157,6 +162,7 @@ short try_external(char *command, char *string)
 	}
 	check( pipe(pipefd) )
 	enable_waiting();
+	check_sig(SIGUSR2, report_failure);
 	check( pid = fork() )
 	if (pid == 0) {
 		check( close(pipefd[0]) )
@@ -175,7 +181,12 @@ short try_external(char *command, char *string)
 		int olderrno = errno;
 		if (!options.is_foreground)
 			log_stdio();	/* Reopen log file so that flock() works on separate fds */
-		send_socket(sockfd, "PRINTERR", "Failed to execute command");
+		else {
+			check( nullfd = open("/dev/tty", O_WRONLY) )
+			check( dup2(nullfd, STDOUT_FILENO) )
+			check( dup2(nullfd, STDERR_FILENO) )
+		}
+		check( kill(getppid(), SIGUSR2) )
 		dlperror("execve");
 		exit(olderrno);
 	}
@@ -183,6 +194,8 @@ short try_external(char *command, char *string)
 	check( close(pipefd[1]) )
 	while (ret = read(pipefd[0], buf, BUF_SIZE)) {
 		if (ret < 0) {
+			if (errno == EINTR)
+				continue;
 			dlperror("read");
 			destructor(errno);
 		}
@@ -191,6 +204,7 @@ short try_external(char *command, char *string)
 	}
 	terminate_child(pid);
 	disable_waiting();
+	check_sig(SIGUSR2, SIG_DFL);
 	send_socket(sockfd, "END", "");
 	return 0;
 }
