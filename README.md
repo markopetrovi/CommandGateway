@@ -16,6 +16,9 @@ It has been adapted to serve as a command gateway for Docker containers, allowin
  - GROUP_TESTDEV, GROUP_DEV, GROUP_ADMIN, GROUP_SUPERUSER: Specify the group name associated with given privilege level. Overrides defaults (jmatestdev, jmadev, jmaadmin, jmaroot)
 # Command line arguments (server-only)
  - `-f / --foreground` Do not daemonize the server. Logs are redirected to stdout
+# External command handlers
+ - The server supports delegating command execution to external executables. They should be in the same directory as the server binary and should have the same filename as the command they handle.
+ - Client supports executing any command in PATH if the request is comming from a server with PRIV_SUPERUSER, as recognized by the client
 # Compiling
  - To build codebase as server, use:
 `make` or `make server`
@@ -23,3 +26,7 @@ It has been adapted to serve as a command gateway for Docker containers, allowin
 `make client`
  - To clean the repository from generated binaries, use:
 `make clean`
+# Usage
+`cgclient <command> [args]`
+# Built-in commands
+`cgclient info` - Print short version string
