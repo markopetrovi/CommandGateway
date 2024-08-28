@@ -135,7 +135,7 @@ static __client char *find_in_path(char *command)
 
 void report_failure(int signum)
 {
-	send_socket(sockfd, "PRINTERR", "Failed to execute command");
+	send_socket(sockfd, "PRINTERR", "Failed to execute command\n");
 }
 
 short try_external(char *command, char *string)

@@ -62,8 +62,10 @@ int sread(int fd, struct iovec *buf, int count)
 	ret = recvmsg(fd, &msg, 0);
 	check_value(ret, &msg);
 	add_null_termination(ret, &msg);
+	/* Apparently Linux doesn't support MSG_EOR for SOCK_SEQPACKET AF_UNIX at the moment, so this message is unnecessary
 	if(!(msg.msg_flags & MSG_EOR))
 		lprintf("[DEBUG]: Didn't receive MSG_EOR at the end of transmission. There could be more packets waiting in the queue.\n");
+	*/
 	return count;
 }
 
