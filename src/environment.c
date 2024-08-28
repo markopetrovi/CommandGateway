@@ -1,10 +1,10 @@
 #include <app.h>
 
 static bool manualDestructorCall = false;
-static time_t timeout_seconds = 5;
 
 char version[] = "CommandGateway 1.0 (C) 2024 Marko Petrovic\n";
 struct program_options options;
+time_t timeout_seconds = 5;
 bool shouldDeleteSocket = false;
 int log_level = LOG_WARNING;
 char *sockPath = NULL, *rootPath = "/";
@@ -193,7 +193,7 @@ static struct program_options parse_program_options(int argc, char* argv[])
 void init_program(int argc, char* argv[])
 {
 	struct sigaction sig = {
-		.sa_flags = SA_NOCLDWAIT,
+		.sa_flags = SA_NOCLDWAIT | SA_NOCLDSTOP,
 		.sa_handler = SIG_DFL
 	};
 

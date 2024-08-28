@@ -51,7 +51,6 @@ out:
 	free(buf);
 }
 
-void dummy() { return; }
 void open_socket()
 {
 	struct sockaddr_un sock = { 0 };

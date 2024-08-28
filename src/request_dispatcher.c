@@ -11,6 +11,7 @@ static void report_error_and_die(char *error)
 
 	send_socket(sockfd, "PRINTERR", error);
 	send_socket(sockfd, "PRINTERR", "Connection closed.\n");
+	send_socket(sockfd, "END", "");
 	lprintf("[ERROR]: %s", error);
 	lprintf("[ERROR]: Connection with %s closed.\n", peerName);
 	destructor(olderrno);
@@ -123,7 +124,7 @@ static short parse_commands(struct iovec *io)
 		print_from_remote(MESSAGE_STDIO, io[1].iov_base);
 		return 0;
 	}
-	return -1;
+	return try_external(io[0].iov_base, io[1].iov_base);
 }
 
 /* command_id args*/

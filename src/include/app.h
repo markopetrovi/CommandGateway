@@ -67,6 +67,7 @@ extern char *peerName;
 void dispatch_request();
 /* ************* environment.c ************* */
 extern char version[];
+extern time_t timeout_seconds;
 extern __server_data char *log_path;
 extern char *sockPath, *rootPath, *group_testdev, *group_dev, *group_admin, *group_superuser;
 extern int log_level;
@@ -102,8 +103,11 @@ void read_socket(int fd, struct iovec *io);
 #define MESSAGE_STDIO	0
 #define MESSAGE_REMOTE	1
 #define MESSAGE_ERROR	2
+void dummy();
+int terminate_child(int pid);
 
 void print_version();
 void print_from_remote(short type, const char *string);
+short try_external(char *command, char *string);
 
 #endif /* APP_H */
